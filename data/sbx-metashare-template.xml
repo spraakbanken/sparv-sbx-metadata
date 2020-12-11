@@ -1,0 +1,89 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resourceInfo xmlns="http://www.ilsp.gr/META-XMLSchema">
+  <identificationInfo>
+    <resourceName lang="eng"></resourceName>
+    <resourceName lang="swe"></resourceName>
+    <description lang="eng"></description>
+    <description lang="swe"></description>
+    <resourceShortName lang="eng"></resourceShortName>
+    <resourceShortName lang="swe"></resourceShortName>
+    <metaShareId/>
+    <identifier></identifier>
+  </identificationInfo>
+  <distributionInfo>
+    <availability></availability>
+    <iprHolder>
+      <organizationInfo>
+        <organizationName lang="swe">Göteborgs universitet</organizationName>
+        <organizationName lang="eng">University of Gothenburg</organizationName>
+        <departmentName lang="swe">Språkbanken</departmentName>
+        <departmentName lang="eng">Språkbanken</departmentName>
+        <communicationInfo>
+          <email>sb-info@svenska.gu.se</email>
+          <url>http://spraakbanken.gu.se</url>
+          <address>Lennart Torstenssonsgatan 8</address>
+          <zipCode>412 56</zipCode>
+          <city>Gothenburg</city>
+          <country>Sweden</country>
+        </communicationInfo>
+      </organizationInfo>
+    </iprHolder>
+  </distributionInfo>
+  <contactPerson>
+    <surname></surname>
+    <givenName></givenName>
+    <communicationInfo>
+      <email></email>
+    </communicationInfo>
+  </contactPerson>
+  <metadataInfo>
+    <metadataCreationDate></metadataCreationDate>
+  </metadataInfo>
+  <resourceDocumentationInfo>
+    <samplesLocation></samplesLocation>
+  </resourceDocumentationInfo>
+  <resourceComponentType>
+    <corpusInfo>
+      <resourceType>corpus</resourceType>
+      <corpusMediaType>
+        <corpusTextInfo>
+          <mediaType>text</mediaType>
+          <lingualityInfo>
+            <lingualityType></lingualityType><!-- monolingual, bilingual, multilingual -->
+          </lingualityInfo>
+          <languageInfo>
+            <languageId></languageId>
+            <languageName></languageName>
+            <languageScript></languageScript><!-- http://unicode.org/iso15924/iso15924-codes.html -->
+          </languageInfo>
+          <sizeInfo>
+            <size></size>
+            <sizeUnit>tokens</sizeUnit>
+          </sizeInfo>
+          <sizeInfo>
+            <size></size>
+            <sizeUnit>sentences</sizeUnit>
+          </sizeInfo>
+          <!-- Create automatically or skip?-->
+<!--           <annotationInfo>
+            <annotationType>segmentation</annotationType>
+            <segmentationLevel>sentence</segmentationLevel>
+            <segmentationLevel>word</segmentationLevel>
+            <annotationFormat>text/xml</annotationFormat>
+            <annotationMode>automatic</annotationMode>
+          </annotationInfo>
+          <annotationInfo>
+            <annotationType>lemmatization</annotationType>
+            <annotationFormat>text/xml</annotationFormat>
+            <annotationMode>automatic</annotationMode>
+          </annotationInfo>
+          <annotationInfo>
+            <annotationType>morphosyntacticAnnotation-posTagging</annotationType>
+            <annotationFormat>text/xml</annotationFormat>
+            <annotationMode>automatic</annotationMode>
+          </annotationInfo> -->
+        </corpusTextInfo>
+      </corpusMediaType>
+    </corpusInfo>
+  </resourceComponentType>
+</resourceInfo>
