@@ -40,32 +40,38 @@ metadata:
 
 sbx_metadata:
   language_name:
-    eng: Swedish
-    swe: svenska
-  # script: Latn # default
-  # linguality: monolingual # default
-  downloads:
-    - licence: CC-BY
-      restriction: attribution
-      download: http://spraakbanken.gu.se/lb/resurser/meningsmangder/gp-test.xml.bz2
-      info: this file contains a scrambled version of the corpus
-      type: corpus
-      format: XML
-    - licence: CC-BY
-      restriction: attribution
-      download: https://svn.spraakdata.gu.se/sb-arkiv/pub/frekvens/gp-test.csv
-      type: corpus
-      format: XML
-  interface:
-    - licence: other
-      restriction: other
-      access: http://spraakbanken.gu.se/korp/#?corpus=gp-test
-  # Move to some default config?
-  contact_info:
-    surname: Forsberg
-    givenName: Markus
-    email: sb-info@svenska.gu.se
-    affiliation: 
-      organisation: Språkbanken
-      email: sb-info@svenska.gu.se
+    eng: Swedish  # default
+    swe: svenska  # default
+  # script: Latn  # default
+  # linguality: monolingual  # default (monolingual, bilingual, multilingual)
+  xml_export: scrambled # scrambled/original/false
+  stats_export: true  # true/false
+  korp: true  # true/false
+
+  ## 'downloads' and 'interface' are not needed for standard corpora
+  # downloads:
+  #   - licence: CC-BY
+  #     restriction: attribution
+  #     download: http://spraakbanken.gu.se/lb/resurser/meningsmangder/gp-test.xml.bz2
+  #     info: this file contains a scrambled version of the corpus
+  #     type: corpus
+  #     format: XML
+  #   - licence: CC-BY
+  #     restriction: attribution
+  #     download: https://svn.spraakdata.gu.se/sb-arkiv/pub/frekvens/gp-test.csv
+  #     type: token frequencies
+  #     format: XML
+  # interface:
+  #   - licence: other
+  #     restriction: other
+  #     access: http://spraakbanken.gu.se/korp/#?corpus=gp-test
+
+  ## 'contact_info' is only needed if somebody else is the contact person for the corpus
+  # contact_info:
+  #   surname: Forsberg
+  #   givenName: Markus
+  #   email: sb-info@svenska.gu.se
+  #   affiliation:
+  #     organisation: Språkbanken
+  #     email: sb-info@svenska.gu.se
 ```

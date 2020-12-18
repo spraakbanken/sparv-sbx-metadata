@@ -11,6 +11,18 @@ logger = util.get_logger(__name__)
 META_SHARE_URL = "http://www.ilsp.gr/META-XMLSchema"
 META_SHARE_NAMESPACE = f"{{{META_SHARE_URL}}}"
 SBX_SAMPLES_LOCATION = "https://spraakbanken.gu.se/en/resources/"
+KORP_URL = "http://spraakbanken.gu.se/korp"
+SBX_DEFAULT_CONTACT = {
+    "contact_info": {
+        "surname": "Forsberg",
+        "givenName": "Markus",
+        "email": "sb-info@svenska.gu.se"
+    },
+    "affiliation": {
+        "organisation": "Språkbanken",
+        "email": "sb-info@svenska.gu.se"
+    }
+}
 
 
 @exporter("META-SHARE export of corpus metadata")
@@ -19,21 +31,21 @@ def metashare(out: Export = Export("sbx_metadata/[metadata.id].xml"),
               metadata: dict = Config("metadata"),
               sentences: AnnotationCommonData = AnnotationCommonData("misc.<sentence>_count"),
               tokens: AnnotationCommonData = AnnotationCommonData("misc.<token>_count"),
+
+              korp_protected: bool = Config("korp.protected"),
+              korp_mode: bool = Config("korp.mode"),
               md_language: str = Config("sbx_metadata.language_name"),
               md_linguality: str = Config("sbx_metadata.linguality"),
               md_script: str = Config("sbx_metadata.script"),
-              protected: bool = Config("korp.protected"),
+              md_xml_export: str = Config("sbx_metadata.xml_export"),
+              md_stats_export: bool = Config("sbx_metadata.stats_export"),
+              md_korp: bool = Config("sbx_metadata.korp"),
               md_downloads: list = Config("sbx_metadata.downloads"),
               md_interface: list = Config("sbx_metadata.interface"),
-              md_contact: dict = Config("sbx_metadata.contact_info")
-              ):
+              md_contact: dict = Config("sbx_metadata.contact_info")):
     """Export corpus metadata to META-SHARE format."""
-    # Create export dir
-    os.makedirs(os.path.dirname(out), exist_ok=True)
-
+    # Parse template and handle META SHARE namespace
     xml = etree.parse(template.path).getroot()
-
-    # Prevent etree from printing namespaces in the resulting xml file
     etree.register_namespace("", META_SHARE_URL)
     ns = META_SHARE_NAMESPACE
 
@@ -49,13 +61,18 @@ def metashare(out: Export = Export("sbx_metadata/[metadata.id].xml"),
     xml.find(".//" + ns + "metadataCreationDate").text = str(time.strftime("%Y-%m-%d"))
 
     # Set availability
-    xml.find(".//" + ns + "availability").text = "available-restrictedUse" if protected else "available-unrestrictedUse"
+    if korp_protected:
+        xml.find(".//" + ns + "availability").text = "available-restrictedUse"
+    else:
+        xml.find(".//" + ns + "availability").text = "available-unrestrictedUse"
 
     # Set licenceInfos
-    # TODO: standard locations for meningsmängder and stats?
     distInfo = xml.find(".//" + ns + "distributionInfo")
+    _set_standard_xml_export(md_xml_export, metadata["id"], distInfo)
+    _set_standard_stats_export(md_stats_export, metadata["id"], distInfo)
+    _set_korp(md_korp, metadata["id"], korp_mode, distInfo)
+    # Add non-standard licenseInfos
     _set_licence_info(md_downloads, distInfo)
-    # TODO: automatically generate Korp link? How to handle modes?
     _set_licence_info(md_interface, distInfo, download=False)
 
     # Set contactPerson
@@ -80,6 +97,7 @@ def metashare(out: Export = Export("sbx_metadata/[metadata.id].xml"),
     # TODO: Set annotationInfo. Make dependent on sentence, token, baseform and pos class!
 
     # Write XML to file
+    os.makedirs(os.path.dirname(out), exist_ok=True)
     etree.ElementTree(xml).write(out, encoding="unicode", method="xml", xml_declaration=True)
     logger.info("Exported: %s", out)
 
@@ -119,6 +137,9 @@ def _set_licence_info(items, distInfo, download=True):
             distributionAccessMedium.text = "accessibleThroughInterface"
             executionLocation = etree.SubElement(licenseInfo, ns + "executionLocation")
             executionLocation.text = item.get("access", "")
+        if item.get("info", None):
+            attributionText = etree.SubElement(licenseInfo, ns + "attributionText")
+            attributionText.text = item.get("info", "")
         # Prettify element
         util.indent_xml(licenseInfo, level=2)
         # Insert in position 1 or after last licenceInfo
@@ -132,6 +153,9 @@ def _set_licence_info(items, distInfo, download=True):
 
 def _set_contact_info(contact, contactPerson):
     """Set contact info in contactPerson element."""
+    if contact == "sbx-default":
+        contact = SBX_DEFAULT_CONTACT
+
     ns = META_SHARE_NAMESPACE
     contactPerson.find(ns + "surname").text = contact.get("surname", "")
     contactPerson.find(ns + "givenName").text = contact.get("givenName", "")
@@ -146,10 +170,54 @@ def _set_contact_info(contact, contactPerson):
             communicationInfo = etree.SubElement(affiliation, ns + "communicationInfo")
             email = etree.SubElement(communicationInfo, ns + "email")
             email.text = contact["affiliation"].get("email", "")
-        # Prettify element
+        # Prettify element with indentation hacking
         util.indent_xml(affiliation, level=2)
-        # More indentation hacking
         contactPerson.find(ns + "communicationInfo").tail = contactPerson.find(ns + "communicationInfo").tail + "  "
         affiliation.tail = "\n  "
 
         contactPerson.append(affiliation)
+
+
+def _set_standard_xml_export(xml_export, corpus_id: str, distInfo):
+    """Add license info for standard XML export."""
+    if xml_export in ("scrambled", "original"):
+        item = {
+            "licence": "CC-BY",
+            "restriction": "attribution",
+            "download": f"http://spraakbanken.gu.se/lb/resurser/meningsmangder/{corpus_id}.xml.bz2",
+            "type": "corpus",
+            "format": "XML"
+        }
+        if xml_export == "scrambled":
+            item["info"] = "this file contains a scrambled version of the corpus"
+        _set_licence_info([item], distInfo)
+    elif not xml_export:
+        return
+    else:
+        raise util.SparvErrorMessage(f"Invalid config value for sbx_metadata.xml_export: '{xml_export}'. "
+                                     "Possible values: 'scrambled', 'original', false")
+
+
+def _set_standard_stats_export(stats_export: bool, corpus_id: str, distInfo):
+    """Add license info for standard token stats export."""
+    if stats_export:
+        _set_licence_info(
+            [{
+                "licence": "CC-BY",
+                "restriction": "attribution",
+                "download": f"https://svn.spraakdata.gu.se/sb-arkiv/pub/frekvens/{corpus_id}.csv",
+                "type": "token frequencies",
+                "format": "CSV"
+            }], distInfo)
+
+
+def _set_korp(korp: bool, corpus_id: str, korp_mode, distInfo):
+    """Add license info for standard Korp interface."""
+    if korp:
+        item = {"licence": "other",
+                "restriction": "other"}
+        if korp_mode == "modern":
+            item["access"] = f"{KORP_URL}/#?corpus={corpus_id}"
+        else:
+            item["access"] = f"{KORP_URL}/?mode={korp_mode}#corpus={corpus_id}"
+        _set_licence_info([item], distInfo, download=False)
