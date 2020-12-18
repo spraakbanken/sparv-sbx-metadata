@@ -4,7 +4,8 @@ import os
 import time
 import xml.etree.ElementTree as etree
 
-from sparv import AnnotationCommonData, Config, Export, Model, ModelOutput, exporter, modelbuilder, util
+from sparv import (AnnotationCommonData, Config, Export, ExportAnnotations, Model, ModelOutput, exporter, modelbuilder,
+                   util)
 
 logger = util.get_logger(__name__)
 
@@ -31,7 +32,7 @@ def metashare(out: Export = Export("sbx_metadata/[metadata.id].xml"),
               metadata: dict = Config("metadata"),
               sentences: AnnotationCommonData = AnnotationCommonData("misc.<sentence>_count"),
               tokens: AnnotationCommonData = AnnotationCommonData("misc.<token>_count"),
-
+              annotations: list = Config("xml_export.annotations"),
               korp_protected: bool = Config("korp.protected"),
               korp_mode: bool = Config("korp.mode"),
               md_language: str = Config("sbx_metadata.language_name"),
@@ -85,6 +86,8 @@ def metashare(out: Export = Export("sbx_metadata/[metadata.id].xml"),
     xml.find(".//" + ns + "lingualityType").text = md_linguality
 
     # Set languageInfo (languageId, languageName, languageScript)
+    # TODO: extract language name automatically from metadata["language"]?
+    # TODO: checkout python libs: iso-639 and https://github.com/LuminosoInsight/langcodes
     xml.find(".//" + ns + "languageId").text = metadata["language"]
     xml.find(".//" + ns + "languageName").text = md_language.get("language_name", {}).get("eng", "Swedish")
     xml.find(".//" + ns + "languageScript").text = md_script
@@ -94,7 +97,9 @@ def metashare(out: Export = Export("sbx_metadata/[metadata.id].xml"),
     sizeInfos[0].find(ns + "size").text = tokens.read()
     sizeInfos[1].find(ns + "size").text = sentences.read()
 
-    # TODO: Set annotationInfo. Make dependent on sentence, token, baseform and pos class!
+    # Set annotationInfo
+    corpusTextInfo = xml.find(".//" + ns + "corpusTextInfo")
+    _set_annotation_info(annotations, corpusTextInfo)
 
     # Write XML to file
     os.makedirs(os.path.dirname(out), exist_ok=True)
@@ -170,12 +175,7 @@ def _set_contact_info(contact, contactPerson):
             communicationInfo = etree.SubElement(affiliation, ns + "communicationInfo")
             email = etree.SubElement(communicationInfo, ns + "email")
             email.text = contact["affiliation"].get("email", "")
-        # Prettify element with indentation hacking
-        util.indent_xml(affiliation, level=2)
-        contactPerson.find(ns + "communicationInfo").tail = contactPerson.find(ns + "communicationInfo").tail + "  "
-        affiliation.tail = "\n  "
-
-        contactPerson.append(affiliation)
+        _append_pretty(contactPerson, affiliation)
 
 
 def _set_standard_xml_export(xml_export, corpus_id: str, distInfo):
@@ -221,3 +221,52 @@ def _set_korp(korp: bool, corpus_id: str, korp_mode, distInfo):
         else:
             item["access"] = f"{KORP_URL}/?mode={korp_mode}#corpus={corpus_id}"
         _set_licence_info([item], distInfo, download=False)
+
+
+def _set_annotation_info(annotations, corpusTextInfo):
+    """Set annotationInfo dependent on sentence, token, baseform and pos class."""
+    ns = META_SHARE_NAMESPACE
+
+    def append_rest(corpusTextInfo, annotationInfo, auto=True):
+        """Append the stuff that occurs in all annotationInfos."""
+        annotationFormat = etree.SubElement(annotationInfo, ns + "annotationFormat")
+        annotationFormat.text = "text/xml"
+        annotationMode = etree.SubElement(annotationInfo, ns + "annotationMode")
+        annotationMode.text = "automatic" if auto else "manual"
+        _append_pretty(corpusTextInfo, annotationInfo)
+
+    #TODO: How do we know whether annotation was done automatically or manually?
+    #TODO: What if annotations contain explicit annotations instead of classes?
+    if any("<token>" in a for a in annotations) or any("<sentence>" in a for a in annotations):
+        annotationInfo = etree.Element(ns + "annotationInfo")
+        annotationType = etree.SubElement(annotationInfo, ns + "annotationType")
+        annotationType.text = "segmentation"
+        if any("<sentence>" in a for a in annotations):
+            segmentationLevel = etree.SubElement(annotationInfo, ns + "segmentationLevel")
+            segmentationLevel.text = "sentence"
+        if any("<token>" in a for a in annotations):
+            segmentationLevel = etree.SubElement(annotationInfo, ns + "segmentationLevel")
+            segmentationLevel.text = "word"
+        append_rest(corpusTextInfo, annotationInfo)
+
+    if any("<baseform>" in a for a in annotations):
+        annotationInfo = etree.Element(ns + "annotationInfo")
+        annotationType = etree.SubElement(annotationInfo, ns + "annotationType")
+        annotationType.text = "lemmatization"
+        append_rest(corpusTextInfo, annotationInfo)
+
+    if any("<pos>" in a for a in annotations):
+        annotationInfo = etree.Element(ns + "annotationInfo")
+        annotationType = etree.SubElement(annotationInfo, ns + "annotationType")
+        annotationType.text = "morphosyntacticAnnotation-posTagging"
+        append_rest(corpusTextInfo, annotationInfo)
+
+
+def _append_pretty(parent, child):
+    """Append child to parent and hack indentation."""
+    # Calculate indentation level for child (obs: works only if child has siblings!)
+    level = int(len((parent.getchildren()[-1].tail).strip("\n")) / 2 + 1)
+    util.indent_xml(child, level)
+    parent.getchildren()[-1].tail = "\n" + "  " * level
+    child.tail = "\n" + "  " * (level - 1)
+    parent.append(child)
