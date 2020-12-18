@@ -35,7 +35,7 @@ def metashare(out: Export = Export("sbx_metadata/[metadata.id].xml"),
               annotations: list = Config("xml_export.annotations"),
               korp_protected: bool = Config("korp.protected"),
               korp_mode: bool = Config("korp.mode"),
-              md_linguality: str = Config("sbx_metadata.linguality"),
+              # md_linguality: str = Config("sbx_metadata.linguality"),
               md_script: str = Config("sbx_metadata.script"),
               md_xml_export: str = Config("sbx_metadata.xml_export"),
               md_stats_export: bool = Config("sbx_metadata.stats_export"),
@@ -82,7 +82,7 @@ def metashare(out: Export = Export("sbx_metadata/[metadata.id].xml"),
     xml.find(".//" + ns + "samplesLocation").text = f"{SBX_SAMPLES_LOCATION}{metadata['id']}"
 
     # Set lingualityType
-    xml.find(".//" + ns + "lingualityType").text = md_linguality
+    xml.find(".//" + ns + "lingualityType").text = "monolingual"
 
     # Set languageInfo (languageId, languageName, languageScript)
     lang = metadata["language"]

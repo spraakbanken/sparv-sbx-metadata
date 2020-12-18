@@ -40,7 +40,6 @@ metadata:
 
 sbx_metadata:
   # script: Latn  # default
-  # linguality: monolingual  # default (monolingual, bilingual, multilingual)
   xml_export: scrambled # scrambled/original/false
   stats_export: true  # true/false
   korp: true  # true/false
