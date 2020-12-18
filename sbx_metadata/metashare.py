@@ -16,11 +16,9 @@ META_SHARE_NAMESPACE = f"{{{META_SHARE_URL}}}"
 SBX_SAMPLES_LOCATION = "https://spraakbanken.gu.se/en/resources/"
 KORP_URL = "http://spraakbanken.gu.se/korp"
 SBX_DEFAULT_CONTACT = {
-    "contact_info": {
-        "surname": "Forsberg",
-        "givenName": "Markus",
-        "email": "sb-info@svenska.gu.se"
-    },
+    "surname": "Forsberg",
+    "givenName": "Markus",
+    "email": "sb-info@svenska.gu.se",
     "affiliation": {
         "organisation": "Språkbanken",
         "email": "sb-info@svenska.gu.se"
@@ -264,7 +262,7 @@ def _set_annotation_info(annotations, corpusTextInfo):
 
 def _append_pretty(parent, child):
     """Append child to parent and hack indentation."""
-    # Calculate indentation level for child (obs: works only if child has siblings!)
+    # Calculate indentation level for child (NB: works only if child has siblings!)
     level = int(len((parent.getchildren()[-1].tail).strip("\n")) / 2 + 1)
     util.indent_xml(child, level)
     parent.getchildren()[-1].tail = "\n" + "  " * level
