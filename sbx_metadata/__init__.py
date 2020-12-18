@@ -4,7 +4,6 @@ from sparv import Config
 from . import metashare
 
 __config__ = [
-    Config("sbx_metadata.language_name", description="Name of the language of source files"),
     Config("sbx_metadata.script", default="Latn",
            description="Writing system used to represent the language of the corpus (ISO-15924)"),
     Config("sbx_metadata.linguality", default="monolingual", description="Indicates whether the corpus includes"

@@ -39,9 +39,6 @@ metadata:
     swe: En liten testkorpus med texter från Göteborgsposten
 
 sbx_metadata:
-  language_name:
-    eng: Swedish  # default
-    swe: svenska  # default
   # script: Latn  # default
   # linguality: monolingual  # default (monolingual, bilingual, multilingual)
   xml_export: scrambled # scrambled/original/false

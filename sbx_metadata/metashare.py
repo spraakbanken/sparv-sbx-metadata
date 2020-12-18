@@ -4,6 +4,8 @@ import os
 import time
 import xml.etree.ElementTree as etree
 
+from iso639 import languages
+
 from sparv import (AnnotationCommonData, Config, Export, ExportAnnotations, Model, ModelOutput, exporter, modelbuilder,
                    util)
 
@@ -35,7 +37,6 @@ def metashare(out: Export = Export("sbx_metadata/[metadata.id].xml"),
               annotations: list = Config("xml_export.annotations"),
               korp_protected: bool = Config("korp.protected"),
               korp_mode: bool = Config("korp.mode"),
-              md_language: str = Config("sbx_metadata.language_name"),
               md_linguality: str = Config("sbx_metadata.linguality"),
               md_script: str = Config("sbx_metadata.script"),
               md_xml_export: str = Config("sbx_metadata.xml_export"),
@@ -86,10 +87,9 @@ def metashare(out: Export = Export("sbx_metadata/[metadata.id].xml"),
     xml.find(".//" + ns + "lingualityType").text = md_linguality
 
     # Set languageInfo (languageId, languageName, languageScript)
-    # TODO: extract language name automatically from metadata["language"]?
-    # TODO: checkout python libs: iso-639 and https://github.com/LuminosoInsight/langcodes
-    xml.find(".//" + ns + "languageId").text = metadata["language"]
-    xml.find(".//" + ns + "languageName").text = md_language.get("language_name", {}).get("eng", "Swedish")
+    lang = metadata["language"]
+    xml.find(".//" + ns + "languageId").text = lang
+    xml.find(".//" + ns + "languageName").text = languages.get(part3=lang).name if lang in languages.part3 else lang
     xml.find(".//" + ns + "languageScript").text = md_script
 
     # Set sizeInfo
