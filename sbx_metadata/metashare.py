@@ -16,6 +16,12 @@ META_SHARE_URL = "http://www.ilsp.gr/META-XMLSchema"
 META_SHARE_NAMESPACE = f"{{{META_SHARE_URL}}}"
 SBX_SAMPLES_LOCATION = "https://spraakbanken.gu.se/en/resources/"
 
+AUTO_TOKEN = ["segment.token", "freeling.token", "stanford.token"]
+AUTO_SENT = ["segment.sentence", "freeling.sentence", "stanfort.sentence"]
+AUTO_POS = ["hunpos.pos", "hunpos.msd", "stanza.pos", "stanza.msd", "flair.pos", "flair.msd", "freeling.pos",
+            "stanford.pos"]
+AUTO_BASEFORM = ["saldo.baseform", "freeling.baseform", "treetagger.baseform", "stanford.baseform"]
+
 
 # TODO: Make installer for copying META-SHARE file to server?
 # TODO: Add META-SHARE file to downloads?
@@ -27,7 +33,7 @@ def metashare(out: Export = Export("sbx_metadata/[metadata.id].xml"),
               metadata: dict = Config("metadata"),
               sentences: AnnotationCommonData = AnnotationCommonData("misc.<sentence>_count"),
               tokens: AnnotationCommonData = AnnotationCommonData("misc.<token>_count"),
-              annotations: list = Config("xml_export.annotations"),
+              annotations: ExportAnnotations = ExportAnnotations("xml_export.annotations", is_input=False),
               korp_protected: bool = Config("korp.protected"),
               korp_mode: bool = Config("korp.mode"),
               # md_linguality: str = Config("sbx_metadata.linguality"),
@@ -185,32 +191,36 @@ def _set_annotation_info(annotations, corpusTextInfo):
         annotationMode.text = "automatic" if auto else "manual"
         _append_pretty(corpusTextInfo, annotationInfo)
 
-    #TODO: How do we know whether annotation was done automatically or manually?
-    #TODO: What if annotations contain explicit annotations instead of classes?
+    #TODO: We do not know anything about manual annotations since we don't know the classes of input annotations.
+    annotations = [a.name for a, _ in annotations]
+    auto_token = any(x for x in AUTO_TOKEN if [a for a in annotations if x in a])
+    auto_sent = any(x for x in AUTO_SENT if [a for a in annotations if x in a])
+    auto_baseform = any(x for x in AUTO_BASEFORM if [a for a in annotations if x in a])
+    auto_pos = any(x for x in AUTO_POS if [a for a in annotations if x in a])
 
-    if any("<token>" in a for a in annotations) or any("<sentence>" in a for a in annotations):
+    if auto_token or auto_sent:
         annotationInfo = etree.Element(ns + "annotationInfo")
         annotationType = etree.SubElement(annotationInfo, ns + "annotationType")
         annotationType.text = "segmentation"
-        if any("<sentence>" in a for a in annotations):
+        if auto_sent:
             segmentationLevel = etree.SubElement(annotationInfo, ns + "segmentationLevel")
             segmentationLevel.text = "sentence"
-        if any("<token>" in a for a in annotations):
+        if auto_token:
             segmentationLevel = etree.SubElement(annotationInfo, ns + "segmentationLevel")
             segmentationLevel.text = "word"
-        append_rest(corpusTextInfo, annotationInfo)
+        append_rest(corpusTextInfo, annotationInfo, auto=True)
 
-    if any("<token:baseform>" in a for a in annotations):
+    if auto_baseform:
         annotationInfo = etree.Element(ns + "annotationInfo")
         annotationType = etree.SubElement(annotationInfo, ns + "annotationType")
         annotationType.text = "lemmatization"
-        append_rest(corpusTextInfo, annotationInfo)
+        append_rest(corpusTextInfo, annotationInfo, auto=True)
 
-    if any("<token:pos>" in a for a in annotations):
+    if auto_pos:
         annotationInfo = etree.Element(ns + "annotationInfo")
         annotationType = etree.SubElement(annotationInfo, ns + "annotationType")
         annotationType.text = "morphosyntacticAnnotation-posTagging"
-        append_rest(corpusTextInfo, annotationInfo)
+        append_rest(corpusTextInfo, annotationInfo, auto=True)
 
 
 def _append_pretty(parent, child):
