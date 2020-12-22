@@ -51,6 +51,7 @@ def json_export(out: Export = Export("sbx_metadata/[metadata.id].json"),
     downloads = []
     downloads.append(metadata_utils.make_standard_xml_export(md_xml_export, metadata["id"]))
     downloads.append(metadata_utils.make_standard_stats_export(md_stats_export, metadata["id"]))
+    downloads.append(metadata_utils.make_metashare(metadata["id"]))
     downloads.extend(md_downloads)
     md_obj["downloads"] = [d for d in downloads if d]
 

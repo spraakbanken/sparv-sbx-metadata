@@ -24,7 +24,6 @@ AUTO_BASEFORM = ["saldo.baseform", "freeling.baseform", "treetagger.baseform", "
 
 
 # TODO: Make installer for copying META-SHARE file to server?
-# TODO: Add META-SHARE file to downloads?
 
 
 @exporter("META-SHARE export of corpus metadata")
@@ -72,6 +71,7 @@ def metashare(out: Export = Export("sbx_metadata/[metadata.id].xml"),
     _set_licence_info([metadata_utils.make_standard_xml_export(md_xml_export, metadata["id"])], distInfo)
     _set_licence_info([metadata_utils.make_standard_stats_export(md_stats_export, metadata["id"])], distInfo)
     _set_licence_info([metadata_utils.make_korp(md_korp, metadata["id"], korp_mode)], distInfo, download=False)
+    _set_licence_info([metadata_utils.make_metashare(metadata["id"])], distInfo)
     # Add non-standard licenseInfos
     _set_licence_info(md_downloads, distInfo)
     _set_licence_info(md_interface, distInfo, download=False)
