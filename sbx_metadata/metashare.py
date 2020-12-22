@@ -5,25 +5,20 @@ import time
 import xml.etree.ElementTree as etree
 
 from iso639 import languages
-
 from sparv import (AnnotationCommonData, Config, Export, ExportAnnotations, Model, ModelOutput, exporter, modelbuilder,
                    util)
+
+from . import metadata_utils
 
 logger = util.get_logger(__name__)
 
 META_SHARE_URL = "http://www.ilsp.gr/META-XMLSchema"
 META_SHARE_NAMESPACE = f"{{{META_SHARE_URL}}}"
 SBX_SAMPLES_LOCATION = "https://spraakbanken.gu.se/en/resources/"
-KORP_URL = "http://spraakbanken.gu.se/korp"
-SBX_DEFAULT_CONTACT = {
-    "surname": "Forsberg",
-    "givenName": "Markus",
-    "email": "sb-info@svenska.gu.se",
-    "affiliation": {
-        "organisation": "Språkbanken",
-        "email": "sb-info@svenska.gu.se"
-    }
-}
+
+
+# TODO: Make installer for copying META-SHARE file to server?
+# TODO: Add META-SHARE file to downloads?
 
 
 @exporter("META-SHARE export of corpus metadata")
@@ -68,9 +63,9 @@ def metashare(out: Export = Export("sbx_metadata/[metadata.id].xml"),
 
     # Set licenceInfos
     distInfo = xml.find(".//" + ns + "distributionInfo")
-    _set_standard_xml_export(md_xml_export, metadata["id"], distInfo)
-    _set_standard_stats_export(md_stats_export, metadata["id"], distInfo)
-    _set_korp(md_korp, metadata["id"], korp_mode, distInfo)
+    _set_licence_info([metadata_utils.make_standard_xml_export(md_xml_export, metadata["id"])], distInfo)
+    _set_licence_info([metadata_utils.make_standard_stats_export(md_stats_export, metadata["id"])], distInfo)
+    _set_licence_info([metadata_utils.make_korp(md_korp, metadata["id"], korp_mode)], distInfo, download=False)
     # Add non-standard licenseInfos
     _set_licence_info(md_downloads, distInfo)
     _set_licence_info(md_interface, distInfo, download=False)
@@ -106,7 +101,7 @@ def metashare(out: Export = Export("sbx_metadata/[metadata.id].xml"),
 
 
 @modelbuilder("Download the SBX META-SHARE template")
-def stanza_pos_model(model: ModelOutput = ModelOutput("sbx_metadata/sbx-metashare-template.xml")):
+def metashare_template(model: ModelOutput = ModelOutput("sbx_metadata/sbx-metashare-template.xml")):
     """Download the SBX META-SHARE template."""
     model.download("https://raw.githubusercontent.com/spraakbanken/sparv-sbx-metadata/main/data/sbx-metashare-template.xml")
 
@@ -124,6 +119,8 @@ def _set_licence_info(items, distInfo, download=True):
     """Create licenceInfo trees for each item and append them to distInfo."""
     ns = META_SHARE_NAMESPACE
     for item in items:
+        if item is None:
+            continue
         # Create licenseInfo element
         licenseInfo = etree.Element(ns + "licenceInfo")
         licence = etree.SubElement(licenseInfo, ns + "licence")
@@ -157,7 +154,7 @@ def _set_licence_info(items, distInfo, download=True):
 def _set_contact_info(contact, contactPerson):
     """Set contact info in contactPerson element."""
     if contact == "sbx-default":
-        contact = SBX_DEFAULT_CONTACT
+        contact = metadata_utils.SBX_DEFAULT_CONTACT
 
     ns = META_SHARE_NAMESPACE
     contactPerson.find(ns + "surname").text = contact.get("surname", "")
@@ -176,51 +173,6 @@ def _set_contact_info(contact, contactPerson):
         _append_pretty(contactPerson, affiliation)
 
 
-def _set_standard_xml_export(xml_export, corpus_id: str, distInfo):
-    """Add license info for standard XML export."""
-    if xml_export in ("scrambled", "original"):
-        item = {
-            "licence": "CC-BY",
-            "restriction": "attribution",
-            "download": f"http://spraakbanken.gu.se/lb/resurser/meningsmangder/{corpus_id}.xml.bz2",
-            "type": "corpus",
-            "format": "XML"
-        }
-        if xml_export == "scrambled":
-            item["info"] = "this file contains a scrambled version of the corpus"
-        _set_licence_info([item], distInfo)
-    elif not xml_export:
-        return
-    else:
-        raise util.SparvErrorMessage(f"Invalid config value for sbx_metadata.xml_export: '{xml_export}'. "
-                                     "Possible values: 'scrambled', 'original', false")
-
-
-def _set_standard_stats_export(stats_export: bool, corpus_id: str, distInfo):
-    """Add license info for standard token stats export."""
-    if stats_export:
-        _set_licence_info(
-            [{
-                "licence": "CC-BY",
-                "restriction": "attribution",
-                "download": f"https://svn.spraakdata.gu.se/sb-arkiv/pub/frekvens/{corpus_id}.csv",
-                "type": "token frequencies",
-                "format": "CSV"
-            }], distInfo)
-
-
-def _set_korp(korp: bool, corpus_id: str, korp_mode, distInfo):
-    """Add license info for standard Korp interface."""
-    if korp:
-        item = {"licence": "other",
-                "restriction": "other"}
-        if korp_mode == "modern":
-            item["access"] = f"{KORP_URL}/#?corpus={corpus_id}"
-        else:
-            item["access"] = f"{KORP_URL}/?mode={korp_mode}#corpus={corpus_id}"
-        _set_licence_info([item], distInfo, download=False)
-
-
 def _set_annotation_info(annotations, corpusTextInfo):
     """Set annotationInfo dependent on sentence, token, baseform and pos class."""
     ns = META_SHARE_NAMESPACE
@@ -235,6 +187,7 @@ def _set_annotation_info(annotations, corpusTextInfo):
 
     #TODO: How do we know whether annotation was done automatically or manually?
     #TODO: What if annotations contain explicit annotations instead of classes?
+
     if any("<token>" in a for a in annotations) or any("<sentence>" in a for a in annotations):
         annotationInfo = etree.Element(ns + "annotationInfo")
         annotationType = etree.SubElement(annotationInfo, ns + "annotationType")
@@ -247,13 +200,13 @@ def _set_annotation_info(annotations, corpusTextInfo):
             segmentationLevel.text = "word"
         append_rest(corpusTextInfo, annotationInfo)
 
-    if any("<baseform>" in a for a in annotations):
+    if any("<token:baseform>" in a for a in annotations):
         annotationInfo = etree.Element(ns + "annotationInfo")
         annotationType = etree.SubElement(annotationInfo, ns + "annotationType")
         annotationType.text = "lemmatization"
         append_rest(corpusTextInfo, annotationInfo)
 
-    if any("<pos>" in a for a in annotations):
+    if any("<token:pos>" in a for a in annotations):
         annotationInfo = etree.Element(ns + "annotationInfo")
         annotationType = etree.SubElement(annotationInfo, ns + "annotationType")
         annotationType.text = "morphosyntacticAnnotation-posTagging"

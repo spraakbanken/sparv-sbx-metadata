@@ -1,7 +1,8 @@
 """Metadata export (SBX specific)."""
 
 from sparv import Config
-from . import metashare
+
+from . import metashare, json_export
 
 __config__ = [
     Config("sbx_metadata.script", default="Latn",
@@ -16,4 +17,5 @@ __config__ = [
     Config("sbx_metadata.interface", default=[], description="List of interfaces where the corpus is available"),
     Config("sbx_metadata.contact_info", default="sbx-default", description="Object containing information about the contact person"
            "for the resource"),
+    Config("sbx_metadata.trainingdata", default=False, description="Whether the corpus is intended as training data"),
 ]
