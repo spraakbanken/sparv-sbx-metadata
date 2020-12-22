@@ -3,10 +3,11 @@
 import os
 import time
 import xml.etree.ElementTree as etree
+from pathlib import Path
 
 from iso639 import languages
-from sparv import (AnnotationCommonData, Config, Export, ExportAnnotations, Model, ModelOutput, exporter, modelbuilder,
-                   util)
+from sparv import (AnnotationCommonData, Config, Corpus, Export, ExportAnnotations, ExportInput, Language, Model,
+                   ModelOutput, OutputCommonData, exporter, installer, modelbuilder, util)
 
 from . import metadata_utils
 
@@ -23,12 +24,11 @@ AUTO_POS = ["hunpos.pos", "hunpos.msd", "stanza.pos", "stanza.msd", "flair.pos",
 AUTO_BASEFORM = ["saldo.baseform", "freeling.baseform", "treetagger.baseform", "stanford.baseform"]
 
 
-# TODO: Make installer for copying META-SHARE file to server?
-
-
 @exporter("META-SHARE export of corpus metadata")
 def metashare(out: Export = Export("sbx_metadata/[metadata.id].xml"),
               template: Model = Model("sbx_metadata/sbx-metashare-template.xml"),
+              corpus_id: Corpus = Corpus(),
+              lang: Language = Language(),
               metadata: dict = Config("metadata"),
               sentences: AnnotationCommonData = AnnotationCommonData("misc.<sentence>_count"),
               tokens: AnnotationCommonData = AnnotationCommonData("misc.<token>_count"),
@@ -52,8 +52,8 @@ def metashare(out: Export = Export("sbx_metadata/[metadata.id].xml"),
     # Set idenfification info
     identificationInfo = xml.find(ns + "identificationInfo")
     for i in identificationInfo.findall(ns + "resourceShortName"):
-        i.text = metadata["id"]
-    identificationInfo.find(ns + "identifier").text = metadata["id"]
+        i.text = corpus_id
+    identificationInfo.find(ns + "identifier").text = corpus_id
     _set_texts(identificationInfo.findall(ns + "resourceName"), metadata.get("name", {}))
     _set_texts(identificationInfo.findall(ns + "description"), metadata.get("description", {}))
 
@@ -68,10 +68,10 @@ def metashare(out: Export = Export("sbx_metadata/[metadata.id].xml"),
 
     # Set licenceInfos
     distInfo = xml.find(".//" + ns + "distributionInfo")
-    _set_licence_info([metadata_utils.make_standard_xml_export(md_xml_export, metadata["id"])], distInfo)
-    _set_licence_info([metadata_utils.make_standard_stats_export(md_stats_export, metadata["id"])], distInfo)
-    _set_licence_info([metadata_utils.make_korp(md_korp, metadata["id"], korp_mode)], distInfo, download=False)
-    _set_licence_info([metadata_utils.make_metashare(metadata["id"])], distInfo)
+    _set_licence_info([metadata_utils.make_standard_xml_export(md_xml_export, corpus_id)], distInfo)
+    _set_licence_info([metadata_utils.make_standard_stats_export(md_stats_export, corpus_id)], distInfo)
+    _set_licence_info([metadata_utils.make_korp(md_korp, corpus_id, korp_mode)], distInfo, download=False)
+    _set_licence_info([metadata_utils.make_metashare(corpus_id)], distInfo)
     # Add non-standard licenseInfos
     _set_licence_info(md_downloads, distInfo)
     _set_licence_info(md_interface, distInfo, download=False)
@@ -80,13 +80,12 @@ def metashare(out: Export = Export("sbx_metadata/[metadata.id].xml"),
     _set_contact_info(md_contact, xml.find(".//" + ns + "contactPerson"))
 
     # Set samplesLocation
-    xml.find(".//" + ns + "samplesLocation").text = f"{SBX_SAMPLES_LOCATION}{metadata['id']}"
+    xml.find(".//" + ns + "samplesLocation").text = f"{SBX_SAMPLES_LOCATION}{corpus_id}"
 
     # Set lingualityType
     xml.find(".//" + ns + "lingualityType").text = "monolingual"
 
     # Set languageInfo (languageId, languageName, languageScript)
-    lang = metadata["language"]
     xml.find(".//" + ns + "languageId").text = lang
     xml.find(".//" + ns + "languageName").text = languages.get(part3=lang).name if lang in languages.part3 else lang
     xml.find(".//" + ns + "languageScript").text = md_script
@@ -104,6 +103,20 @@ def metashare(out: Export = Export("sbx_metadata/[metadata.id].xml"),
     os.makedirs(os.path.dirname(out), exist_ok=True)
     etree.ElementTree(xml).write(out, encoding="unicode", method="xml", xml_declaration=True)
     logger.info("Exported: %s", out)
+
+
+@installer("Copy META-SHARE file to remote host")
+def install_metashare(xmlfile: ExportInput = ExportInput("sbx_metadata/[metadata.id].xml"),
+                      out: OutputCommonData = OutputCommonData("sbx_metadata.install_metashare_marker"),
+                      export_path: str = Config("sbx_metadata.metashare_path"),
+                      host: str = Config("sbx_metadata.metashare_host")):
+    """Copy META-SHARE file to remote host."""
+    if not host:
+        raise util.SparvErrorMessage("'sbx_metadata.metashare_host' not set! META-SHARE export not installed.")
+    filename = Path(xmlfile).name
+    remote_file_path = os.path.join(export_path, filename)
+    util.install_file(host, xmlfile, remote_file_path)
+    out.write("")
 
 
 @modelbuilder("Download the SBX META-SHARE template")

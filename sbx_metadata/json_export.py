@@ -2,11 +2,12 @@
 
 import json
 import os
-import time
+from pathlib import Path
 
 from iso639 import languages
 from langcodes import Language
-from sparv import AnnotationCommonData, Config, Export, exporter, util
+from sparv import (AnnotationCommonData, Config, Corpus, Export, ExportInput, Language, OutputCommonData, exporter,
+                   installer, util)
 
 from . import metadata_utils
 
@@ -15,6 +16,8 @@ logger = util.get_logger(__name__)
 
 @exporter("JSON export of corpus metadata")
 def json_export(out: Export = Export("sbx_metadata/[metadata.id].json"),
+                corpus_id: Corpus = Corpus(),
+                lang: Language = Language(),
                 metadata: dict = Config("metadata"),
                 sentences: AnnotationCommonData = AnnotationCommonData("misc.<sentence>_count"),
                 tokens: AnnotationCommonData = AnnotationCommonData("misc.<token>_count"),
@@ -29,12 +32,11 @@ def json_export(out: Export = Export("sbx_metadata/[metadata.id].json"),
                 md_contact: dict = Config("sbx_metadata.contact_info")):
     """Export corpus metadata to JSON format."""
     md_obj = {}
-    md_obj["id"] = metadata["id"]
+    md_obj["id"] = corpus_id
     md_obj["type"] = "corpus"
     md_obj["trainingdata"] = md_trainingdata
 
     # Set language info
-    lang = metadata["language"]
     md_obj["lang"] = [{
         "code": lang,
         "name_en": languages.get(part3=lang).name if lang in languages.part3 else lang,
@@ -49,15 +51,15 @@ def json_export(out: Export = Export("sbx_metadata/[metadata.id].json"),
 
     # Set downloads
     downloads = []
-    downloads.append(metadata_utils.make_standard_xml_export(md_xml_export, metadata["id"]))
-    downloads.append(metadata_utils.make_standard_stats_export(md_stats_export, metadata["id"]))
-    downloads.append(metadata_utils.make_metashare(metadata["id"]))
+    downloads.append(metadata_utils.make_standard_xml_export(md_xml_export, corpus_id))
+    downloads.append(metadata_utils.make_standard_stats_export(md_stats_export, corpus_id))
+    downloads.append(metadata_utils.make_metashare(corpus_id))
     downloads.extend(md_downloads)
     md_obj["downloads"] = [d for d in downloads if d]
 
     # Set interface
     interface = []
-    interface.append(metadata_utils.make_korp(md_korp, metadata["id"], korp_mode))
+    interface.append(metadata_utils.make_korp(md_korp, corpus_id, korp_mode))
     interface.extend(md_interface)
     md_obj["interface"] = [d for d in interface if d]
 
@@ -79,3 +81,17 @@ def json_export(out: Export = Export("sbx_metadata/[metadata.id].json"),
     with open(out, "w") as f:
         f.write(json_str)
     logger.info("Exported: %s", out)
+
+
+@installer("Copy JSON metadata to remote host")
+def install_json(jsonfile: ExportInput = ExportInput("[metadata.id].json"),
+                 out: OutputCommonData = OutputCommonData("sbx_metadata.install_json_export_marker"),
+                 export_path: str = Config("sbx_metadata.json_export_path"),
+                 host: str = Config("sbx_metadata.json_export_host")):
+    """Copy JSON metadata to remote host."""
+    if not host:
+        raise util.SparvErrorMessage("'sbx_metadata.json_export_host' not set! JSON export not installed.")
+    filename = Path(jsonfile).name
+    remote_file_path = os.path.join(export_path, filename)
+    util.install_file(host, jsonfile, remote_file_path)
+    out.write("")

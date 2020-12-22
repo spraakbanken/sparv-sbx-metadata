@@ -18,4 +18,10 @@ __config__ = [
     Config("sbx_metadata.contact_info", default="sbx-default", description="Object containing information about the contact person"
            "for the resource"),
     Config("sbx_metadata.trainingdata", default=False, description="Whether the corpus is intended as training data"),
+    Config("sbx_metadata.metashare_host", "bark", description="Remote host to copy META-SHARE export to."),
+    Config("sbx_metadata.metashare_path", "/home/fksparv/sb-metadata/meta-share/corpus",
+           description="Path on remote host to copy META-SHARE export to."),
+    Config("sbx_metadata.json_export_host", "bark", description="Remote host to copy JSON metadata export to."),
+    Config("sbx_metadata.json_export_path", "/home/fksparv/sb-metadata/json/corpus",
+           description="Path on remote host to copy JSON metadata export to.")
 ]
