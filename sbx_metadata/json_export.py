@@ -6,8 +6,8 @@ from pathlib import Path
 
 from iso639 import languages
 from langcodes import Language
-from sparv import (AnnotationCommonData, Config, Corpus, Export, ExportInput, Language, OutputCommonData, exporter,
-                   installer, util)
+from sparv.api import (AnnotationCommonData, Config, Corpus, Export, ExportInput, Language, OutputCommonData, exporter,
+                       installer, util)
 
 from . import metadata_utils
 

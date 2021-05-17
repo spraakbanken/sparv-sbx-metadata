@@ -2,7 +2,7 @@
 
 import re
 
-from sparv import Config, wizard
+from sparv.api import Config, wizard
 
 from . import json_export, metashare
 

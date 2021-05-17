@@ -6,8 +6,8 @@ import xml.etree.ElementTree as etree
 from pathlib import Path
 
 from iso639 import languages
-from sparv import (AnnotationCommonData, Config, Corpus, Export, ExportAnnotations, ExportInput, Language, Model,
-                   ModelOutput, OutputCommonData, exporter, installer, modelbuilder, util)
+from sparv.api import (AnnotationCommonData, Config, Corpus, Export, ExportAnnotations, ExportInput, Language, Model,
+                       ModelOutput, OutputCommonData, exporter, installer, modelbuilder, util)
 
 from . import metadata_utils
 

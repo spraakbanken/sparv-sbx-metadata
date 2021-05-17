@@ -1,6 +1,6 @@
 """Metadata utilities."""
 
-from sparv import util
+from sparv.api import util
 
 
 KORP_URL = "https://spraakbanken.gu.se/korp"
