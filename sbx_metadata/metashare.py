@@ -7,11 +7,12 @@ from pathlib import Path
 
 from iso639 import languages
 from sparv.api import (AnnotationCommonData, Config, Corpus, Export, ExportAnnotations, ExportInput, Language, Model,
-                       ModelOutput, OutputCommonData, exporter, installer, modelbuilder, util)
+                       ModelOutput, OutputCommonData, SparvErrorMessage, exporter, get_logger, installer, modelbuilder,
+                       util)
 
 from . import metadata_utils
 
-logger = util.get_logger(__name__)
+logger = get_logger(__name__)
 
 META_SHARE_URL = "http://www.ilsp.gr/META-XMLSchema"
 META_SHARE_NAMESPACE = f"{{{META_SHARE_URL}}}"
@@ -112,10 +113,10 @@ def install_metashare(xmlfile: ExportInput = ExportInput("sbx_metadata/[metadata
                       host: str = Config("sbx_metadata.metashare_host")):
     """Copy META-SHARE file to remote host."""
     if not host:
-        raise util.SparvErrorMessage("'sbx_metadata.metashare_host' not set! META-SHARE export not installed.")
+        raise SparvErrorMessage("'sbx_metadata.metashare_host' not set! META-SHARE export not installed.")
     filename = Path(xmlfile).name
     remote_file_path = os.path.join(export_path, filename)
-    util.install_file(host, xmlfile, remote_file_path)
+    util.install.install_file(host, xmlfile, remote_file_path)
     out.write("")
 
 
@@ -160,7 +161,7 @@ def _set_licence_info(items, distInfo, download=True):
             attributionText = etree.SubElement(licenseInfo, ns + "attributionText")
             attributionText.text = item.get("info", "")
         # Prettify element
-        util.indent_xml(licenseInfo, level=2)
+        util.misc.indent_xml(licenseInfo, level=2)
         # Insert in position 1 or after last licenceInfo
         if distInfo.find(ns + "licenceInfo") is None:
             distInfo.insert(1, licenseInfo)
@@ -240,7 +241,7 @@ def _append_pretty(parent, child):
     """Append child to parent and hack indentation."""
     # Calculate indentation level for child (NB: works only if child has siblings!)
     level = int(len((parent.getchildren()[-1].tail).strip("\n")) / 2 + 1)
-    util.indent_xml(child, level)
+    util.misc.indent_xml(child, level)
     parent.getchildren()[-1].tail = "\n" + "  " * level
     child.tail = "\n" + "  " * (level - 1)
     parent.append(child)

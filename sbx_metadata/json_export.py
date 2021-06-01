@@ -6,12 +6,12 @@ from pathlib import Path
 
 from iso639 import languages
 from langcodes import Language
-from sparv.api import (AnnotationCommonData, Config, Corpus, Export, ExportInput, Language, OutputCommonData, exporter,
-                       installer, util)
+from sparv.api import (AnnotationCommonData, Config, Corpus, Export, ExportInput, Language, OutputCommonData,
+                       SparvErrorMessage, exporter, get_logger, installer, util)
 
 from . import metadata_utils
 
-logger = util.get_logger(__name__)
+logger = get_logger(__name__)
 
 
 @exporter("JSON export of corpus metadata")
@@ -90,8 +90,8 @@ def install_json(jsonfile: ExportInput = ExportInput("[metadata.id].json"),
                  host: str = Config("sbx_metadata.json_export_host")):
     """Copy JSON metadata to remote host."""
     if not host:
-        raise util.SparvErrorMessage("'sbx_metadata.json_export_host' not set! JSON export not installed.")
+        raise SparvErrorMessage("'sbx_metadata.json_export_host' not set! JSON export not installed.")
     filename = Path(jsonfile).name
     remote_file_path = os.path.join(export_path, filename)
-    util.install_file(host, jsonfile, remote_file_path)
+    util.install.install_file(host, jsonfile, remote_file_path)
     out.write("")
