@@ -15,7 +15,7 @@ def get_readme(readme_path):
 setuptools.setup(
     name="sparv-sbx-metadata",
     version="0.0.1",
-    description="FreeLing plugin for Sparv (Språkbanken's corpus annotation pipeline)",
+    description="Sparv plugin for SBX specific export of metadata",
     long_description=get_readme("README.md"),
     long_description_content_type="text/markdown",
     url="https://github.com/spraakbanken/sparv-sbx-metadata/",
