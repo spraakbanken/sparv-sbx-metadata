@@ -1,0 +1,16 @@
+name: sparv-sbx-metadata
+description: Sparv plugin for SBX specific export of metadata
+long_description: |
+  This plugin can be used for generating META-SHARE XML files and json files used for resources hosted at
+  Språkbanken Text.
+source: "https://github.com/spraakbanken/sparv-sbx-metadata/"
+author: Språkbanken
+author_email: sb-info@svenska.gu.se
+license: MIT
+python_requires: ">=3.6"
+requires_additional_installs: false
+
+versions:
+  - version: 0.0.1
+    sparv_pipeline_requires: ">=4,<5"
+    install_pointer: https://github.com/spraakbanken/sparv-sbx-metadata/archive/main.zip
