@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 
 from iso639 import languages
-from langcodes import Language
+import langcodes
 from sparv.api import (AnnotationCommonData, Config, Corpus, Export, ExportInput, Language, OutputCommonData,
                        SparvErrorMessage, exporter, get_logger, installer, util)
 
@@ -40,7 +40,7 @@ def json_export(out: Export = Export("sbx_metadata/[metadata.id].json"),
     md_obj["lang"] = [{
         "code": lang,
         "name_en": languages.get(part3=lang).name if lang in languages.part3 else lang,
-        "name_sv": Language.get(lang).display_name("swe"),
+        "name_sv": langcodes.Language.get(lang).display_name("swe"),
     }]
 
     # Set name and description
