@@ -90,7 +90,7 @@ def json_export(out: Export = Export("sbx_metadata/[metadata.id].json"),
 
 
 @installer("Copy JSON metadata to remote host")
-def install_json(jsonfile: ExportInput = ExportInput("[metadata.id].json"),
+def install_json(jsonfile: ExportInput = ExportInput("sbx_metadata/[metadata.id].json"),
                  out: OutputCommonData = OutputCommonData("sbx_metadata.install_json_export_marker"),
                  export_path: str = Config("sbx_metadata.json_export_path"),
                  host: str = Config("sbx_metadata.json_export_host")):
