@@ -75,6 +75,12 @@ def json_export(out: Export = Export("sbx_metadata/[metadata.id].json"),
         "sentences": sentences.read()
     }
 
+    # Set Korp attrs
+    md_obj["korp_info"] = {
+        "mode": korp_mode,
+        "protected": korp_protected
+    }
+
     # Write JSON to file
     os.makedirs(os.path.dirname(out), exist_ok=True)
     json_str = json.dumps(md_obj, ensure_ascii=False, indent=4)
