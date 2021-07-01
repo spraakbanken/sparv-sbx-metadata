@@ -8,6 +8,8 @@ MENINGSMANGDER_URL = "https://spraakbanken.gu.se/lb/resurser/meningsmangder"
 STATS_URL = "https://svn.spraakdata.gu.se/sb-arkiv/pub/frekvens"
 METASHARE_URL = "https://svn.spraakdata.gu.se/sb-arkiv/pub/metadata/corpus"
 
+STANDARD_LICENSE = "CC BY 4.0"
+
 
 SBX_DEFAULT_CONTACT = {
     "surname": "Forsberg",
@@ -24,7 +26,7 @@ def make_standard_xml_export(xml_export, corpus_id: str):
     """Make license info object for standard XML export."""
     if xml_export in ("scrambled", "original"):
         item = {
-            "licence": "CC-BY",
+            "licence": STANDARD_LICENSE,
             "restriction": "attribution",
             "download": f"{MENINGSMANGDER_URL}/{corpus_id}.xml.bz2",
             "type": "corpus",
@@ -43,7 +45,7 @@ def make_standard_xml_export(xml_export, corpus_id: str):
 def make_standard_stats_export(stats_export: bool, corpus_id: str):
     """Make license info object for standard token stats export."""
     if stats_export:
-        return {"licence": "CC-BY",
+        return {"licence": STANDARD_LICENSE,
                 "restriction": "attribution",
                 "download": f"{STATS_URL}/{corpus_id}.csv",
                 "type": "token frequencies",
@@ -54,7 +56,7 @@ def make_standard_stats_export(stats_export: bool, corpus_id: str):
 def make_korp(korp: bool, corpus_id: str, korp_mode):
     """Make license info object for standard Korp interface."""
     if korp:
-        item = {"licence": "CC-BY",
+        item = {"licence": STANDARD_LICENSE,
                 "restriction": "attribution"}
         if korp_mode == "modern":
             item["access"] = f"{KORP_URL}/#?corpus={corpus_id}"
@@ -65,7 +67,7 @@ def make_korp(korp: bool, corpus_id: str, korp_mode):
 
 def make_metashare(corpus_id: str):
     """Make downloadable object pointing to META-SHARE file."""
-    return {"licence": "CC-BY",
+    return {"licence": STANDARD_LICENSE,
             "restriction": "attribution",
             "download": f"{METASHARE_URL}/{corpus_id}.xml",
             "type": "metadata",

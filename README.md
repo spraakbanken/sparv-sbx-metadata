@@ -46,13 +46,13 @@ sbx_metadata:
 
   ## 'downloads' and 'interface' are not needed for standard corpora
   # downloads:
-  #   - licence: CC-BY
+  #   - licence: CC BY 4.0
   #     restriction: attribution
   #     download: http://spraakbanken.gu.se/lb/resurser/meningsmangder/gp-test.xml.bz2
   #     info: this file contains a scrambled version of the corpus
   #     type: corpus
   #     format: XML
-  #   - licence: CC-BY
+  #   - licence: CC BY 4.0
   #     restriction: attribution
   #     download: https://svn.spraakdata.gu.se/sb-arkiv/pub/frekvens/gp-test.csv
   #     type: token frequencies

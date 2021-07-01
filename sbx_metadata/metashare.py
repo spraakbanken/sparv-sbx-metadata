@@ -144,7 +144,7 @@ def _set_licence_info(items, distInfo, download=True):
         # Create licenseInfo element
         licenseInfo = etree.Element(ns + "licenceInfo")
         licence = etree.SubElement(licenseInfo, ns + "licence")
-        licence.text = item.get("licence", "CC-BY")
+        licence.text = item.get("licence", metadata_utils.STANDARD_LICENSE)
         restrictionsOfUse = etree.SubElement(licenseInfo, ns + "restrictionsOfUse")
         restrictionsOfUse.text = item.get("restriction", "attribution")
         if download:
