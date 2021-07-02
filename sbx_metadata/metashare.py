@@ -18,11 +18,11 @@ META_SHARE_URL = "http://www.ilsp.gr/META-XMLSchema"
 META_SHARE_NAMESPACE = f"{{{META_SHARE_URL}}}"
 SBX_SAMPLES_LOCATION = "https://spraakbanken.gu.se/en/resources/"
 
-AUTO_TOKEN = ["segment.token", "freeling.token", "stanford.token"]
-AUTO_SENT = ["segment.sentence", "freeling.sentence", "stanfort.sentence"]
-AUTO_POS = ["hunpos.pos", "hunpos.msd", "stanza.pos", "stanza.msd", "flair.pos", "flair.msd", "freeling.pos",
-            "stanford.pos"]
-AUTO_BASEFORM = ["saldo.baseform", "freeling.baseform", "treetagger.baseform", "stanford.baseform"]
+AUTO_TOKEN = ["segment.token", "stanza.token", "freeling.token", "stanford.token"]
+AUTO_SENT = ["segment.sentence", "stanza.sentence", "freeling.sentence", "stanfort.sentence"]
+AUTO_POS = ["hunpos.pos", "hunpos.msd", "hunpos.msd_hist", "hist.homograph_set", "stanza.pos", "stanza.msd",
+            "stanza.upos", "misc.upos", "flair.pos", "flair.msd", "freeling.pos", "stanford.pos"]
+AUTO_BASEFORM = ["saldo.baseform", "hist.baseform", "freeling.baseform", "treetagger.baseform", "stanford.baseform"]
 
 
 @exporter("META-SHARE export of corpus metadata")
