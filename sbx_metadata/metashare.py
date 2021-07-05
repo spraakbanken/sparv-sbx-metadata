@@ -127,7 +127,7 @@ def install_metashare(xmlfile: ExportInput = ExportInput("sbx_metadata/[metadata
         raise SparvErrorMessage("'sbx_metadata.metashare_host' not set! META-SHARE export not installed.")
     filename = Path(xmlfile).name
     remote_file_path = os.path.join(export_path, filename)
-    util.install.install_file(host, xmlfile, remote_file_path)
+    util.install.install_file(xmlfile, host, remote_file_path)
     out.write("")
 
 
