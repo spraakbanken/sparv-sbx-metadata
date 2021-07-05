@@ -9,17 +9,12 @@ Sparv plugin for SBX specific export of metadata
 
 ## Installation
 
-**Option 1:** Installation from pypi with [pipx](https://pipxproject.github.io/pipx/):
-```bash
-pipx inject sparv-pipeline sparv-sbx-metadata
-```
-
-**Option 2:** Installation from GitHub with [pipx](https://pipxproject.github.io/pipx/):
+**Option 1:** Installation from GitHub with [pipx](https://pipxproject.github.io/pipx/):
 ```bash
 pipx inject sparv-pipeline https://github.com/spraakbanken/sparv-sbx-metadata/archive/latest.tar.gz
 ```
 
-**Option 3:** Manual download of plugin and installation in your sparv-pipeline virtual environment:
+**Option 2:** Manual download of plugin and installation in your sparv-pipeline virtual environment:
 ```bash
 source [path to sparv-pipeline virtual environment]/bin/activate
 pip install [path to the downloaded sparv-sbx-metadata directory]
@@ -29,14 +24,17 @@ pip install [path to the downloaded sparv-sbx-metadata directory]
 ## Example config
 ```yaml
 metadata:
-  id: gp-test
+  id: test
   language: swe
   name:
-    eng: GP test corpus
-    swe: GP testkorpus
+    eng: Test corpus
+    swe: Testkorpus
   description:
-    eng: A small test corpus with texts from Göteborgsposten
-    swe: En liten testkorpus med texter från Göteborgsposten
+    eng: A small test corpus for testing purposes
+    swe: En liten testkorpus för att testa
+
+# korp:
+#   mode: modern # default
 
 sbx_metadata:
   # script: Latn  # default
