@@ -178,7 +178,7 @@ def _set_licence_info(items, distInfo, download=True):
             distInfo.insert(1, licenseInfo)
         else:
             # Get index of last licenceInfo
-            i = distInfo.getchildren().index(distInfo.findall(ns + "licenceInfo")[-1])
+            i = list(distInfo).index(distInfo.findall(ns + "licenceInfo")[-1])
             distInfo.insert(i + 1, licenseInfo)
 
 
@@ -251,8 +251,8 @@ def _set_annotation_info(annotations, corpusTextInfo):
 def _append_pretty(parent, child):
     """Append child to parent and hack indentation."""
     # Calculate indentation level for child (NB: works only if child has siblings!)
-    level = int(len((parent.getchildren()[-1].tail).strip("\n")) / 2 + 1)
+    level = int(len((list(parent)[-1].tail).strip("\n")) / 2 + 1)
     util.misc.indent_xml(child, level)
-    parent.getchildren()[-1].tail = "\n" + "  " * level
+    list(parent)[-1].tail = "\n" + "  " * level
     child.tail = "\n" + "  " * (level - 1)
     parent.append(child)
