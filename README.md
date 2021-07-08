@@ -37,10 +37,10 @@ metadata:
 #   mode: modern # default
 
 sbx_metadata:
-  # script: Latn  # default
   xml_export: scrambled # scrambled/original/false
   stats_export: true  # true/false
   korp: true  # true/false
+  # script: Latn  # default
 
   ## 'downloads' and 'interface' are not needed for standard corpora
   # downloads:
