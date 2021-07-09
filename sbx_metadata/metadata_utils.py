@@ -47,7 +47,7 @@ def make_standard_stats_export(stats_export: bool, corpus_id: str):
     if stats_export:
         return {"licence": STANDARD_LICENSE,
                 "restriction": "attribution",
-                "download": f"{STATS_URL}/{corpus_id}.csv",
+                "download": f"{STATS_URL}/stats_{corpus_id}.csv",
                 "type": "token frequencies",
                 "format": "CSV"
                 }
