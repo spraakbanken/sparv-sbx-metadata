@@ -53,14 +53,15 @@ def make_standard_stats_export(stats_export: bool, corpus_id: str):
                 }
 
 
-def make_korp(korp: bool, corpus_id: str, korp_mode):
+def make_korp(korp: bool, corpus_id: str, korp_modes: list):
     """Make license info object for standard Korp interface."""
     if korp:
         item = {"licence": STANDARD_LICENSE,
                 "restriction": "attribution"}
-        if korp_mode == "modern":
+        if "default" in korp_modes:
             item["access"] = f"{KORP_URL}/#?corpus={corpus_id}"
         else:
+            korp_mode = korp_modes[0]
             item["access"] = f"{KORP_URL}/?mode={korp_mode}#corpus={corpus_id}"
         return item
 

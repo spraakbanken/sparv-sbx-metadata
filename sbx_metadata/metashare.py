@@ -36,7 +36,7 @@ def metashare(out: Export = Export("sbx_metadata/[metadata.id].xml"),
               tokens: AnnotationCommonData = AnnotationCommonData("misc.<token>_count"),
               annotations: ExportAnnotations = ExportAnnotations("xml_export.annotations", is_input=False),
               korp_protected: bool = Config("korp.protected"),
-              korp_mode: bool = Config("korp.mode"),
+              korp_modes: bool = Config("korp.modes"),
               # md_linguality: str = Config("sbx_metadata.linguality"),
               md_script: str = Config("sbx_metadata.script"),
               md_xml_export: str = Config("sbx_metadata.xml_export"),
@@ -72,7 +72,7 @@ def metashare(out: Export = Export("sbx_metadata/[metadata.id].xml"),
     distInfo = xml.find(".//" + ns + "distributionInfo")
     _set_licence_info([metadata_utils.make_standard_xml_export(md_xml_export, corpus_id)], distInfo)
     _set_licence_info([metadata_utils.make_standard_stats_export(md_stats_export, corpus_id)], distInfo)
-    _set_licence_info([metadata_utils.make_korp(md_korp, corpus_id, korp_mode)], distInfo, download=False)
+    _set_licence_info([metadata_utils.make_korp(md_korp, corpus_id, korp_modes)], distInfo, download=False)
     _set_licence_info([metadata_utils.make_metashare(corpus_id)], distInfo)
     # Add non-standard licenseInfos
     _set_licence_info(md_downloads, distInfo)

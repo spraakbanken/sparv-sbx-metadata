@@ -22,7 +22,7 @@ def json_export(out: Export = Export("sbx_metadata/[metadata.id].json"),
                 sentences: AnnotationCommonData = AnnotationCommonData("misc.<sentence>_count"),
                 tokens: AnnotationCommonData = AnnotationCommonData("misc.<token>_count"),
                 korp_protected: bool = Config("korp.protected"),
-                korp_mode: bool = Config("korp.mode"),
+                korp_modes: list = Config("korp.modes"),
                 md_trainingdata: bool = Config("sbx_metadata.trainingdata"),
                 md_xml_export: str = Config("sbx_metadata.xml_export"),
                 md_stats_export: bool = Config("sbx_metadata.stats_export"),
@@ -59,7 +59,7 @@ def json_export(out: Export = Export("sbx_metadata/[metadata.id].json"),
 
     # Set interface
     interface = []
-    interface.append(metadata_utils.make_korp(md_korp, corpus_id, korp_mode))
+    interface.append(metadata_utils.make_korp(md_korp, corpus_id, korp_modes))
     interface.extend(md_interface)
     md_obj["interface"] = [d for d in interface if d]
 
@@ -77,7 +77,7 @@ def json_export(out: Export = Export("sbx_metadata/[metadata.id].json"),
 
     # Set Korp attrs
     md_obj["korp_info"] = {
-        "mode": korp_mode,
+        "modes": korp_modes,
         "protected": korp_protected
     }
 

@@ -34,13 +34,13 @@ metadata:
     swe: En liten testkorpus för att testa
 
 # korp:
-#   mode: modern # default
+#   modes: default # default setting
 
 sbx_metadata:
   xml_export: scrambled # scrambled/original/false
   stats_export: true  # true/false
   korp: true  # true/false
-  # script: Latn  # default
+  # script: Latn  # default setting
 
   ## 'downloads' and 'interface' are not needed for standard corpora
   # downloads:
