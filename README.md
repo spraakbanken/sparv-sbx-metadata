@@ -5,7 +5,7 @@ Sparv plugin for SBX specific export of metadata
 ## Prerequisites
 
 * [Sparv pipeline](https://github.com/spraakbanken/sparv-pipeline)
-* [Python 3.6.1](http://python.org/) or newer
+* [Python 3.6.2](http://python.org/) or newer
 
 ## Installation
 

@@ -7,10 +7,14 @@ source: "https://github.com/spraakbanken/sparv-sbx-metadata/"
 author: Språkbanken
 author_email: sb-info@svenska.gu.se
 license: MIT
-python_requires: ">=3.6"
 requires_additional_installs: false
 
 versions:
+  - version: 1.0.0
+    python_requires: ">=3.6.2"
+    sparv_pipeline_requires: ">=5.0.0"
+    install_pointer: https://github.com/spraakbanken/sparv-sbx-metadata/archive/v1.0.0.zip
   - version: 0.0.1
+    python_requires: ">=3.6"
     sparv_pipeline_requires: ">=4,<5"
-    install_pointer: https://github.com/spraakbanken/sparv-sbx-metadata/archive/main.zip
+    install_pointer: https://github.com/spraakbanken/sparv-sbx-metadata/archive/v0.0.1.zip
