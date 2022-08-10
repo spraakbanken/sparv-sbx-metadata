@@ -33,8 +33,9 @@ metadata:
     eng: A small test corpus for testing purposes
     swe: En liten testkorpus för att testa
 
-# korp:
-#   modes: default # default setting
+korp:
+  modes:
+    - default # default setting
 
 sbx_metadata:
   xml_export: scrambled # scrambled/original/false
