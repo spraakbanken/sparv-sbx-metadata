@@ -112,7 +112,7 @@ def metashare(out: Export = Export("sbx_metadata/[metadata.id].xml"),
 
     # Write XML to file
     os.makedirs(os.path.dirname(out), exist_ok=True)
-    with open(out, mode="w") as outfile:
+    with open(out, mode="w", encoding="utf-8") as outfile:
         outfile.write("\n".join(xml_lines))
     logger.info("Exported: %s", out)
 

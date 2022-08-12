@@ -90,7 +90,7 @@ def json_export(out: Export = Export("sbx_metadata/[metadata.id].json"),
     # Write JSON to file
     os.makedirs(os.path.dirname(out), exist_ok=True)
     json_str = json.dumps(md_obj, ensure_ascii=False, indent=4)
-    with open(out, "w") as f:
+    with open(out, "w", encoding="utf-8") as f:
         f.write(json_str)
     logger.info("Exported: %s", out)
 
