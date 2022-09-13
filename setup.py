@@ -14,7 +14,7 @@ def get_readme(readme_path):
 
 setuptools.setup(
     name="sparv-sbx-metadata",
-    version="1.0.0",
+    version="1.0.1",
     description="Sparv plugin for SBX specific export of metadata",
     long_description=get_readme("README.md"),
     long_description_content_type="text/markdown",
@@ -26,7 +26,7 @@ setuptools.setup(
     python_requires=">=3.6.2",
     install_requires=[
         "langcodes[data]>=2.1.0",
-        "sparv-pipeline>=5.0.0",
+        "sparv-pipeline>=5.0.1.dev0",
     ],
     entry_points={"sparv.plugin": ["sbx_metadata = sbx_metadata"]}
 )

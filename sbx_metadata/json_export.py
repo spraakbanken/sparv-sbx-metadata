@@ -77,7 +77,7 @@ def json_export(out: Export = Export("sbx_metadata/[metadata.id].json"),
 
     # Set Korp attrs
     md_obj["korp_info"] = {
-        "modes": korp_modes,
+        "modes": [i.get("name") for i in korp_modes],
         "protected": korp_protected
     }
 
