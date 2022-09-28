@@ -7,9 +7,9 @@ import xml.etree.ElementTree as etree
 from pathlib import Path
 
 from iso639 import languages
-from sparv.api import (AnnotationCommonData, Config, Corpus, Export, ExportAnnotations, ExportInput, Language, Model,
-                       ModelOutput, OutputCommonData, SparvErrorMessage, exporter, get_logger, installer, modelbuilder,
-                       util)
+from sparv.api import (AnnotationCommonData, Config, Corpus, Export, ExportAnnotationNames, ExportInput, Language,
+                       Model, ModelOutput, OutputMarker, SparvErrorMessage, exporter, get_logger, installer,
+                       modelbuilder, util)
 
 from . import metadata_utils
 
@@ -34,7 +34,7 @@ def metashare(out: Export = Export("sbx_metadata/[metadata.id].xml"),
               metadata: dict = Config("metadata"),
               sentences: AnnotationCommonData = AnnotationCommonData("misc.<sentence>_count"),
               tokens: AnnotationCommonData = AnnotationCommonData("misc.<token>_count"),
-              annotations: ExportAnnotations = ExportAnnotations("xml_export.annotations", is_input=False),
+              annotations: ExportAnnotationNames = ExportAnnotationNames("xml_export.annotations"),
               korp_protected: bool = Config("korp.protected"),
               korp_modes: bool = Config("korp.modes"),
               # md_linguality: str = Config("sbx_metadata.linguality"),
@@ -119,7 +119,7 @@ def metashare(out: Export = Export("sbx_metadata/[metadata.id].xml"),
 
 @installer("Copy META-SHARE file to remote host")
 def install_metashare(xmlfile: ExportInput = ExportInput("sbx_metadata/[metadata.id].xml"),
-                      out: OutputCommonData = OutputCommonData("sbx_metadata.install_metashare_marker"),
+                      out: OutputMarker = OutputMarker("sbx_metadata.install_metashare_marker"),
                       export_path: str = Config("sbx_metadata.metashare_path"),
                       host: str = Config("sbx_metadata.metashare_host")):
     """Copy META-SHARE file to remote host."""
@@ -128,7 +128,7 @@ def install_metashare(xmlfile: ExportInput = ExportInput("sbx_metadata/[metadata
     filename = Path(xmlfile).name
     remote_file_path = os.path.join(export_path, filename)
     util.install.install_file(xmlfile, host, remote_file_path)
-    out.write("")
+    out.write()
 
 
 @modelbuilder("Download the SBX META-SHARE template")

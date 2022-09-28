@@ -6,7 +6,7 @@ from pathlib import Path
 
 from iso639 import languages
 import langcodes
-from sparv.api import (AnnotationCommonData, Config, Corpus, Export, ExportInput, Language, OutputCommonData,
+from sparv.api import (AnnotationCommonData, Config, Corpus, Export, ExportInput, Language, OutputMarker,
                        SparvErrorMessage, exporter, get_logger, installer, util)
 
 from . import metadata_utils
@@ -97,7 +97,7 @@ def json_export(out: Export = Export("sbx_metadata/[metadata.id].json"),
 
 @installer("Copy JSON metadata to remote host")
 def install_json(jsonfile: ExportInput = ExportInput("sbx_metadata/[metadata.id].json"),
-                 out: OutputCommonData = OutputCommonData("sbx_metadata.install_json_export_marker"),
+                 out: OutputMarker = OutputMarker("sbx_metadata.install_json_export_marker"),
                  export_path: str = Config("sbx_metadata.json_export_path"),
                  host: str = Config("sbx_metadata.json_export_host")):
     """Copy JSON metadata to remote host."""
@@ -106,4 +106,4 @@ def install_json(jsonfile: ExportInput = ExportInput("sbx_metadata/[metadata.id]
     filename = Path(jsonfile).name
     remote_file_path = os.path.join(export_path, filename)
     util.install.install_file(jsonfile, host, remote_file_path)
-    out.write("")
+    out.write()
