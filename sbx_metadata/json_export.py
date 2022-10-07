@@ -105,5 +105,5 @@ def install_json(jsonfile: ExportInput = ExportInput("sbx_metadata/[metadata.id]
         raise SparvErrorMessage("'sbx_metadata.json_export_host' not set! JSON export not installed.")
     filename = Path(jsonfile).name
     remote_file_path = os.path.join(export_path, filename)
-    util.install.install_file(jsonfile, host, remote_file_path)
+    util.install.install_path(jsonfile, host, remote_file_path)
     out.write()
