@@ -57,7 +57,11 @@ def metashare(out: Export = Export("sbx_metadata/[metadata.id].xml"),
         i.text = corpus_id
     identificationInfo.find(ns + "identifier").text = corpus_id
     _set_texts(identificationInfo.findall(ns + "resourceName"), metadata.get("name", {}))
-    _set_texts(identificationInfo.findall(ns + "description"), metadata.get("description", {}))
+
+    if metadata.get("short_description"):
+        _set_texts(identificationInfo.findall(ns + "description"), metadata.get("short_description", {}))
+    elif metadata.get("description"):
+        _set_texts(identificationInfo.findall(ns + "description"), metadata.get("description", {}))
 
     # Set metadata creation date in metadataInfo
     xml.find(".//" + ns + "metadataCreationDate").text = str(time.strftime("%Y-%m-%d"))

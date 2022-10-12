@@ -24,6 +24,7 @@ def json_export(out: Export = Export("sbx_metadata/[metadata.id].json"),
                 korp_protected: bool = Config("korp.protected"),
                 korp_modes: list = Config("korp.modes"),
                 md_trainingdata: bool = Config("sbx_metadata.trainingdata"),
+                md_in_collections: list = Config("sbx_metadata.in_collections"),
                 md_xml_export: str = Config("sbx_metadata.xml_export"),
                 md_stats_export: bool = Config("sbx_metadata.stats_export"),
                 md_korp: bool = Config("sbx_metadata.korp"),
@@ -35,6 +36,7 @@ def json_export(out: Export = Export("sbx_metadata/[metadata.id].json"),
     md_obj["id"] = corpus_id
     md_obj["type"] = "corpus"
     md_obj["trainingdata"] = md_trainingdata
+    md_obj["in_collections"] = md_in_collections
 
     # Set language info
     md_obj["lang"] = [{
@@ -43,11 +45,19 @@ def json_export(out: Export = Export("sbx_metadata/[metadata.id].json"),
         "name_sv": langcodes.Language.get(lang).display_name("swe"),
     }]
 
-    # Set name and description
+    # Set name
     md_obj["name_en"] = metadata.get("name", {}).get("eng")
     md_obj["name_sv"] = metadata.get("name", {}).get("swe")
-    md_obj["description_en"] = metadata.get("description", {}).get("eng")
-    md_obj["description_sv"] = metadata.get("description", {}).get("swe")
+
+    # Set description (either both short and long or just short)
+    md_obj["description_en"] = metadata.get("short_description", {}).get("eng")
+    md_obj["description_sv"] = metadata.get("short_description", {}).get("swe")
+    if metadata.get("description") and metadata.get("short_description"):
+        md_obj["long_description_en"] = metadata.get("description", {}).get("eng")
+        md_obj["long_description_sv"] = metadata.get("description", {}).get("swe")
+    elif metadata.get("description"):
+        md_obj["description_en"] = metadata.get("description", {}).get("eng")
+        md_obj["description_sv"] = metadata.get("description", {}).get("swe")
 
     # Set downloads
     downloads = []

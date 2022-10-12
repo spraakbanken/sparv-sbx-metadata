@@ -21,6 +21,8 @@ __config__ = [
            description="Object containing information about the contact person"
            "for the resource"),
     Config("sbx_metadata.trainingdata", default=False, description="Whether the corpus is intended as training data"),
+    Config("sbx_metadata.in_collections", default=False,
+           description="List of material collections that this corpus is a part of"),
     Config("sbx_metadata.metashare_host", "fksparv@bark.spraakdata.gu.se",
            description="Remote host to copy META-SHARE export to."),
     Config("sbx_metadata.metashare_path", "/home/fksparv/metadata/meta-share/corpus",
