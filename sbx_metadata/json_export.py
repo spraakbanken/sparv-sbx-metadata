@@ -50,14 +50,15 @@ def json_export(out: Export = Export("sbx_metadata/[metadata.id].json"),
     md_obj["name_sv"] = metadata.get("name", {}).get("swe")
 
     # Set description (either both short and long or just short)
-    md_obj["description_en"] = metadata.get("short_description", {}).get("eng")
-    md_obj["description_sv"] = metadata.get("short_description", {}).get("swe")
-    if metadata.get("description") and metadata.get("short_description"):
-        md_obj["long_description_en"] = metadata.get("description", {}).get("eng")
-        md_obj["long_description_sv"] = metadata.get("description", {}).get("swe")
-    elif metadata.get("description"):
-        md_obj["description_en"] = metadata.get("description", {}).get("eng")
-        md_obj["description_sv"] = metadata.get("description", {}).get("swe")
+    for lang, lang_short in [("eng", "en"), ("swe", "sv")]:
+        if metadata.get("short_description", {}).get(lang):
+            md_obj[f"description_{lang_short}"] = metadata.get("short_description", {}).get(lang)
+            # Both short and long descriptions are available
+            if metadata.get("description", {}).get(lang):
+                md_obj[f"long_description_{lang_short}"] = metadata.get("description", {}).get(lang)
+        # Only long description is available
+        elif metadata.get("description", {}).get(lang):
+            md_obj[f"description_{lang_short}"] = metadata.get("description", {}).get(lang)
 
     # Set downloads
     downloads = []
