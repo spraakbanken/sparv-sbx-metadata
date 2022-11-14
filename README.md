@@ -29,9 +29,12 @@ metadata:
   name:
     eng: Test corpus
     swe: Testkorpus
-  description:
+  short_description:
     eng: A small test corpus for testing purposes
     swe: En liten testkorpus för att testa
+  description:
+    eng: This is an optional longer description that may contain HTML and multiple sentences.
+    eng: Detta är en längre beskrivning som kan innehålla HTML och flera meningar.
 
 korp:
   modes:
