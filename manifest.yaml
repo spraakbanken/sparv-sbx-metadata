@@ -10,6 +10,10 @@ license: MIT
 requires_additional_installs: false
 
 versions:
+  - version: 1.0.1
+    python_requires: ">=3.6.2"
+    sparv_pipeline_requires: ">=5.0.1.dev0"
+    install_pointer: https://github.com/spraakbanken/sparv-sbx-metadata/archive/v1.0.1.zip
   - version: 1.0.0
     python_requires: ">=3.6.2"
     sparv_pipeline_requires: ">=5.0.0"
