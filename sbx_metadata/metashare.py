@@ -7,9 +7,26 @@ import xml.etree.ElementTree as etree
 from pathlib import Path
 
 from iso639 import languages
-from sparv.api import (AnnotationCommonData, Config, Corpus, Export, ExportAnnotationNames, ExportInput, Language,
-                       Model, ModelOutput, OutputMarker, SparvErrorMessage, exporter, get_logger, installer,
-                       modelbuilder, util)
+from sparv.api import (
+    AnnotationCommonData,
+    Config,
+    Corpus,
+    Export,
+    ExportAnnotationNames,
+    ExportInput,
+    Language,
+    MarkerOptional,
+    Model,
+    ModelOutput,
+    OutputMarker,
+    SparvErrorMessage,
+    exporter,
+    get_logger,
+    installer,
+    uninstaller,
+    modelbuilder,
+    util
+)
 
 from . import metadata_utils
 
@@ -121,18 +138,39 @@ def metashare(out: Export = Export("sbx_metadata/[metadata.id].xml"),
     logger.info("Exported: %s", out)
 
 
-@installer("Copy META-SHARE file to remote host")
-def install_metashare(xmlfile: ExportInput = ExportInput("sbx_metadata/[metadata.id].xml"),
-                      out: OutputMarker = OutputMarker("sbx_metadata.install_metashare_marker"),
-                      export_path: str = Config("sbx_metadata.metashare_path"),
-                      host: str = Config("sbx_metadata.metashare_host")):
+@installer("Copy META-SHARE file to remote host", uninstaller="sbx_metadata:uninstall_metashare")
+def install_metashare(
+    xmlfile: ExportInput = ExportInput("sbx_metadata/[metadata.id].xml"),
+    marker: OutputMarker = OutputMarker("sbx_metadata.install_metashare_marker"),
+    uninstall_marker: MarkerOptional = MarkerOptional("sbx_metadata.uninstall_metashare_marker"),
+    export_path: str = Config("sbx_metadata.metashare_path"),
+    host: str = Config("sbx_metadata.metashare_host")
+):
     """Copy META-SHARE file to remote host."""
     if not host:
         raise SparvErrorMessage("'sbx_metadata.metashare_host' not set! META-SHARE export not installed.")
     filename = Path(xmlfile).name
     remote_file_path = os.path.join(export_path, filename)
     util.install.install_path(xmlfile, host, remote_file_path)
-    out.write()
+    uninstall_marker.remove()
+    marker.write()
+
+
+@uninstaller("Uninstall META-SHARE file")
+def uninstall_metashare(
+    corpus_id: Corpus = Corpus(),
+    marker: OutputMarker = OutputMarker("sbx_metadata.uninstall_metashare_marker"),
+    install_marker: MarkerOptional = MarkerOptional("sbx_metadata.install_metashare_marker"),
+    export_path: str = Config("sbx_metadata.metashare_path"),
+    host: str = Config("sbx_metadata.metashare_host")
+):
+    """Uninstall META-SHARE file."""
+    if not host:
+        raise SparvErrorMessage("'sbx_metadata.metashare_host' not set! META-SHARE export not uninstalled.")
+    remote_file_path = os.path.join(export_path, f"{corpus_id}.xml")
+    util.install.uninstall_path(remote_file_path, host)
+    install_marker.remove()
+    marker.write()
 
 
 @modelbuilder("Download the SBX META-SHARE template")

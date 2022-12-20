@@ -6,8 +6,22 @@ from pathlib import Path
 
 from iso639 import languages
 import langcodes
-from sparv.api import (AnnotationCommonData, Config, Corpus, Export, ExportInput, Language, OutputMarker,
-                       SparvErrorMessage, exporter, get_logger, installer, util)
+from sparv.api import (
+    AnnotationCommonData,
+    Config,
+    Corpus,
+    Export,
+    ExportInput,
+    Language,
+    MarkerOptional,
+    OutputMarker,
+    SparvErrorMessage,
+    exporter,
+    get_logger,
+    installer,
+    uninstaller,
+    util
+)
 
 from . import metadata_utils
 
@@ -106,15 +120,36 @@ def json_export(out: Export = Export("sbx_metadata/[metadata.id].json"),
     logger.info("Exported: %s", out)
 
 
-@installer("Copy JSON metadata to remote host")
-def install_json(jsonfile: ExportInput = ExportInput("sbx_metadata/[metadata.id].json"),
-                 out: OutputMarker = OutputMarker("sbx_metadata.install_json_export_marker"),
-                 export_path: str = Config("sbx_metadata.json_export_path"),
-                 host: str = Config("sbx_metadata.json_export_host")):
+@installer("Copy JSON metadata to remote host", uninstaller="sbx_metadata:uninstall_json")
+def install_json(
+    jsonfile: ExportInput = ExportInput("sbx_metadata/[metadata.id].json"),
+    marker: OutputMarker = OutputMarker("sbx_metadata.install_json_export_marker"),
+    uninstall_marker: MarkerOptional = MarkerOptional("sbx_metadata.uninstall_json_export_marker"),
+    export_path: str = Config("sbx_metadata.json_export_path"),
+    host: str = Config("sbx_metadata.json_export_host")
+):
     """Copy JSON metadata to remote host."""
     if not host:
         raise SparvErrorMessage("'sbx_metadata.json_export_host' not set! JSON export not installed.")
     filename = Path(jsonfile).name
     remote_file_path = os.path.join(export_path, filename)
     util.install.install_path(jsonfile, host, remote_file_path)
-    out.write()
+    uninstall_marker.remove()
+    marker.write()
+
+
+@uninstaller("Uninstall JSON metadata")
+def uninstall_json(
+    corpus_id: Corpus = Corpus(),
+    marker: OutputMarker = OutputMarker("sbx_metadata.uninstall_json_export_marker"),
+    install_marker: MarkerOptional = MarkerOptional("sbx_metadata.install_json_export_marker"),
+    export_path: str = Config("sbx_metadata.json_export_path"),
+    host: str = Config("sbx_metadata.json_export_host")
+):
+    """Uninstall JSON metadata."""
+    if not host:
+        raise SparvErrorMessage("'sbx_metadata.json_export_host' not set! JSON export not uninstalled.")
+    remote_file_path = os.path.join(export_path, f"{corpus_id}.json")
+    util.install.uninstall_path(remote_file_path, host)
+    install_marker.remove()
+    marker.write()
