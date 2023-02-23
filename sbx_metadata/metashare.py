@@ -6,7 +6,8 @@ import time
 import xml.etree.ElementTree as etree
 from pathlib import Path
 
-from iso639 import languages
+import pycountry
+
 from sparv.api import (
     AnnotationCommonData,
     Config,
@@ -109,8 +110,10 @@ def metashare(out: Export = Export("sbx_metadata/[metadata.id].xml"),
     xml.find(".//" + ns + "lingualityType").text = "monolingual"
 
     # Set languageInfo (languageId, languageName, languageScript)
+    alpha3 = list(l.alpha_3 for l in pycountry.languages)
+    language_name = pycountry.languages.get(alpha_3=lang).name if lang in alpha3 else lang
     xml.find(".//" + ns + "languageId").text = lang
-    xml.find(".//" + ns + "languageName").text = languages.get(part3=lang).name if lang in languages.part3 else lang
+    xml.find(".//" + ns + "languageName").text = language_name
     xml.find(".//" + ns + "languageScript").text = md_script
 
     # Set sizeInfo

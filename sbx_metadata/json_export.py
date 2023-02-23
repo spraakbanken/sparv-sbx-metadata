@@ -4,8 +4,6 @@ import json
 import os
 from pathlib import Path
 
-from iso639 import languages
-import langcodes
 from sparv.api import (
     AnnotationCommonData,
     Config,
