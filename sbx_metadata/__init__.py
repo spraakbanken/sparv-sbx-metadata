@@ -122,14 +122,8 @@ def setup_wizard(corpus_config: dict):
         {
             "when": lambda x: x.get("sbx_metadata.contact_info") != "sbx-default",
             "type": "text",
-            "name": "sbx_metadata.contact_info.givenName",
-            "message": "First name of contact person:"
-        },
-        {
-            "when": lambda x: x.get("sbx_metadata.contact_info") != "sbx-default",
-            "type": "text",
-            "name": "sbx_metadata.contact_info.surname",
-            "message": "Surname of contact person:"
+            "name": "sbx_metadata.contact_info.name",
+            "message": "Name of contact person:"
         },
         {
             "when": lambda x: x.get("sbx_metadata.contact_info") != "sbx-default",

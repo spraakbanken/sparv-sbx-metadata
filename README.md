@@ -48,26 +48,26 @@ sbx_metadata:
 
   ## 'downloads' and 'interface' are not needed for standard corpora
   # downloads:
-  #   - licence: CC BY 4.0
-  #     restriction: attribution
-  #     download: http://spraakbanken.gu.se/lb/resurser/meningsmangder/gp-test.xml.bz2
-  #     info: this file contains a scrambled version of the corpus
+  #   - url: http://spraakbanken.gu.se/lb/resurser/meningsmangder/gp-test.xml.bz2
   #     type: corpus
   #     format: XML
-  #   - licence: CC BY 4.0
+  #     info: this file contains a scrambled version of the corpus
+  #     licence: CC BY 4.0
   #     restriction: attribution
-  #     download: https://svn.spraakdata.gu.se/sb-arkiv/pub/frekvens/gp-test.csv
+  #   - url: https://svn.spraakdata.gu.se/sb-arkiv/pub/frekvens/gp-test.csv
   #     type: token frequencies
   #     format: XML
+  #     info: ""
+  #     licence: CC BY 4.0
+  #     restriction: attribution
   # interface:
-  #   - licence: other
-  #     restriction: other
-  #     access: http://spraakbanken.gu.se/korp/#?corpus=gp-test
+  #   - access: http://spraakbanken.gu.se/korp/#?corpus=gp-test
+  #     licence: CC BY 4.0
+  #     restriction: attribution
 
   ## 'contact_info' is only needed if somebody else is the contact person for the corpus
   # contact_info:
-  #   surname: Forsberg
-  #   givenName: Markus
+  #   name: Markus Forsberg
   #   email: sb-info@svenska.gu.se
   #   affiliation:
   #     organisation: Språkbanken

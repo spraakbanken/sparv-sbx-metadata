@@ -204,7 +204,7 @@ def _set_licence_info(items, distInfo, download=True):
             distributionAccessMedium = etree.SubElement(licenseInfo, ns + "distributionAccessMedium")
             distributionAccessMedium.text = "downloadable"
             downloadLocation = etree.SubElement(licenseInfo, ns + "downloadLocation")
-            downloadLocation.text = item.get("download", "")
+            downloadLocation.text = item.get("url", "")
         else:
             distributionAccessMedium = etree.SubElement(licenseInfo, ns + "distributionAccessMedium")
             distributionAccessMedium.text = "accessibleThroughInterface"
@@ -230,8 +230,9 @@ def _set_contact_info(contact, contactPerson):
         contact = metadata_utils.SBX_DEFAULT_CONTACT
 
     ns = META_SHARE_NAMESPACE
-    contactPerson.find(ns + "surname").text = contact.get("surname", "")
-    contactPerson.find(ns + "givenName").text = contact.get("givenName", "")
+    name = contact.get("name", "")
+    contactPerson.find(ns + "surname").text = name.split()[1] if len(name) > 1 else name.split()[0]
+    contactPerson.find(ns + "givenName").text = name.split()[0]
     contactPerson.find(ns + "communicationInfo" + "/" + ns + "email").text = contact.get("email", "")
     # Create affiliation element if needed
     if contact.get("affiliation") and any(i in contact.get("affiliation", {}) for i in ["organisation", "email"]):

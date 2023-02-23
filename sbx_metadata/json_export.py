@@ -35,7 +35,7 @@ def json_export(out: Export = Export("sbx_metadata/[metadata.id].json"),
                 metadata: dict = Config("metadata"),
                 sentences: AnnotationCommonData = AnnotationCommonData("misc.<sentence>_count"),
                 tokens: AnnotationCommonData = AnnotationCommonData("misc.<token>_count"),
-                korp_protected: bool = Config("korp.protected"),
+                # korp_protected: bool = Config("korp.protected"),
                 korp_modes: list = Config("korp.modes"),
                 md_trainingdata: bool = Config("sbx_metadata.trainingdata"),
                 md_in_collections: list = Config("sbx_metadata.in_collections"),
@@ -47,38 +47,35 @@ def json_export(out: Export = Export("sbx_metadata/[metadata.id].json"),
                 md_contact: dict = Config("sbx_metadata.contact_info")):
     """Export corpus metadata to JSON format."""
     md_obj = {}
-    md_obj["id"] = corpus_id
+    md_obj["name"] = metadata.get("name", {})
+
+    # Set short description
+    set_long_description = True
+    if metadata.get("short_description"):
+        md_obj["short_description"] = metadata.get("short_description", {})
+    # Only long description available, use it for short_description!
+    elif metadata.get("description"):
+        set_long_description = False
+        md_obj[f"short_description"] = metadata.get("description", {})
+
     md_obj["type"] = "corpus"
     md_obj["trainingdata"] = md_trainingdata
+    md_obj["unlisted"] = False
+    md_obj["successors"] = []
+    md_obj["language_codes"] = [lang]
+
+    # Set size
+    md_obj["size"] = {
+        "tokens": tokens.read(),
+        "sentences": sentences.read()
+    }
+
     md_obj["in_collections"] = md_in_collections
-
-    # Set language info
-    md_obj["lang"] = [{
-        "code": lang,
-        "name_en": languages.get(part3=lang).name if lang in languages.part3 else lang,
-        "name_sv": langcodes.Language.get(lang).display_name("swe"),
-    }]
-
-    # Set name
-    md_obj["name_en"] = metadata.get("name", {}).get("eng")
-    md_obj["name_sv"] = metadata.get("name", {}).get("swe")
-
-    # Set description (either both short and long or just short)
-    for lang, lang_short in [("eng", "en"), ("swe", "sv")]:
-        if metadata.get("short_description", {}).get(lang):
-            md_obj[f"description_{lang_short}"] = metadata.get("short_description", {}).get(lang)
-            # Both short and long descriptions are available
-            if metadata.get("description", {}).get(lang):
-                md_obj[f"long_description_{lang_short}"] = metadata.get("description", {}).get(lang)
-        # Only long description is available
-        elif metadata.get("description", {}).get(lang):
-            md_obj[f"description_{lang_short}"] = metadata.get("description", {}).get(lang)
 
     # Set downloads
     downloads = []
     downloads.append(metadata_utils.make_standard_xml_export(md_xml_export, corpus_id))
     downloads.append(metadata_utils.make_standard_stats_export(md_stats_export, corpus_id))
-    downloads.append(metadata_utils.make_metashare(corpus_id))
     downloads.extend(md_downloads)
     md_obj["downloads"] = [d for d in downloads if d]
 
@@ -94,27 +91,13 @@ def json_export(out: Export = Export("sbx_metadata/[metadata.id].json"),
     else:
         md_obj["contact_info"] = md_contact
 
-    # Set size
-    md_obj["size"] = {
-        "tokens": tokens.read(),
-        "sentences": sentences.read()
-    }
-
-    # Set Korp attrs
-    md_obj["korp_info"] = {
-        "modes": [i.get("name") for i in korp_modes],
-        "protected": korp_protected
-    }
-
-    # Set export attrs
-    md_obj["export"] = {
-        "stats_export": md_stats_export,
-        "xml_export": md_xml_export
-    }
+    # Set description
+    if set_long_description and metadata.get("description"):
+        md_obj[f"description"] = metadata.get("description", {})
 
     # Write JSON to file
     os.makedirs(os.path.dirname(out), exist_ok=True)
-    json_str = json.dumps(md_obj, ensure_ascii=False, indent=4)
+    json_str = json.dumps(md_obj, ensure_ascii=False, indent=2)
     with open(out, "w", encoding="utf-8") as f:
         f.write(json_str)
     logger.info("Exported: %s", out)
