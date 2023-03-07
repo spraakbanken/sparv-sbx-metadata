@@ -68,7 +68,7 @@ def json_export(out: Export = Export("sbx_metadata/[metadata.id].json"),
         "sentences": sentences.read()
     }
 
-    md_obj["in_collections"] = md_in_collections
+    md_obj["in_collections"] = md_in_collections or []
 
     # Set downloads
     downloads = []
