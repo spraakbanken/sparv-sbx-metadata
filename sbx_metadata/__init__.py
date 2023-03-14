@@ -4,7 +4,7 @@ import re
 
 from sparv.api import Config, wizard
 
-from . import json_export, metashare
+from . import yaml_export, metashare
 
 __config__ = [
     Config("sbx_metadata.script", default="Latn",
@@ -27,10 +27,10 @@ __config__ = [
            description="Remote host to copy META-SHARE export to."),
     Config("sbx_metadata.metashare_path", "/home/fksparv/metadata/meta-share/corpus",
            description="Path on remote host to copy META-SHARE export to."),
-    Config("sbx_metadata.json_export_host", "fksparv@bark.spraakdata.gu.se",
-           description="Remote host to copy JSON metadata export to."),
-    Config("sbx_metadata.json_export_path", "/home/fksparv/metadata/json/corpus",
-           description="Path on remote host to copy JSON metadata export to.")
+    Config("sbx_metadata.yaml_export_host", "fksparv@bark.spraakdata.gu.se",
+           description="Remote host to copy YAML metadata export to."),
+    Config("sbx_metadata.yaml_export_path", "/home/fksparv/metadata/yaml/corpus",
+           description="Path on remote host to copy YAML metadata export to.")
 ]
 
 

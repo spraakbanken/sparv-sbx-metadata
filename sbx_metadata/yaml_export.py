@@ -1,8 +1,9 @@
-"""Export corpus metadata to JSON (SBX specific)."""
+"""Export corpus metadata to YAML (SBX specific)."""
 
-import json
 import os
 from pathlib import Path
+
+import yaml
 
 from sparv.api import (
     AnnotationCommonData,
@@ -26,8 +27,8 @@ from . import metadata_utils
 logger = get_logger(__name__)
 
 
-@exporter("JSON export of corpus metadata")
-def json_export(out: Export = Export("sbx_metadata/[metadata.id].json"),
+@exporter("YAML export of corpus metadata")
+def yaml_export(out: Export = Export("sbx_metadata/[metadata.id].yaml"),
                 corpus_id: Corpus = Corpus(),
                 lang: Language = Language(),
                 metadata: dict = Config("metadata"),
@@ -43,7 +44,7 @@ def json_export(out: Export = Export("sbx_metadata/[metadata.id].json"),
                 md_downloads: list = Config("sbx_metadata.downloads"),
                 md_interface: list = Config("sbx_metadata.interface"),
                 md_contact: dict = Config("sbx_metadata.contact_info")):
-    """Export corpus metadata to JSON format."""
+    """Export corpus metadata to YAML format."""
     md_obj = {}
     md_obj["name"] = metadata.get("name", {})
 
@@ -60,7 +61,7 @@ def json_export(out: Export = Export("sbx_metadata/[metadata.id].json"),
     md_obj["trainingdata"] = md_trainingdata
     md_obj["unlisted"] = False
     md_obj["successors"] = []
-    md_obj["language_codes"] = [lang]
+    md_obj["language_codes"] = [str(lang)]
 
     # Set size
     md_obj["size"] = {
@@ -93,44 +94,68 @@ def json_export(out: Export = Export("sbx_metadata/[metadata.id].json"),
     if set_long_description and metadata.get("description"):
         md_obj[f"description"] = metadata.get("description", {})
 
-    # Write JSON to file
+    # Write YAML to file
     os.makedirs(os.path.dirname(out), exist_ok=True)
-    json_str = json.dumps(md_obj, ensure_ascii=False, indent=2)
-    with open(out, "w", encoding="utf-8") as f:
-        f.write(json_str)
+    # yaml_str = json.dumps(md_obj, ensure_ascii=False, indent=2)
+    # with open(out, "w", encoding="utf-8") as f:
+    #     f.write(yaml_str)
+
+    with open(out, "w") as yaml_file:
+        _dump_pretty(md_obj, yaml_file)
     logger.info("Exported: %s", out)
 
 
-@installer("Copy JSON metadata to remote host", uninstaller="sbx_metadata:uninstall_json")
-def install_json(
-    jsonfile: ExportInput = ExportInput("sbx_metadata/[metadata.id].json"),
-    marker: OutputMarker = OutputMarker("sbx_metadata.install_json_export_marker"),
-    uninstall_marker: MarkerOptional = MarkerOptional("sbx_metadata.uninstall_json_export_marker"),
-    export_path: str = Config("sbx_metadata.json_export_path"),
-    host: str = Config("sbx_metadata.json_export_host")
+def _dump_pretty(data, path):
+    """Dump config YAML to string. (stolen from Sparv)"""
+    class IndentDumper(yaml.Dumper):
+        """Customized YAML dumper that indents lists."""
+
+        def increase_indent(self, flow=False, indentless=False):
+            """Force indentation."""
+            return super(IndentDumper, self).increase_indent(flow)
+
+    # Add custom string representer for prettier multiline strings
+    def str_representer(dumper, data):
+        if len(data.splitlines()) > 1:  # Check for multiline string
+            data = '\n'.join([line.rstrip() for line in data.strip().splitlines()])
+            return dumper.represent_scalar("tag:yaml.org,2002:str", data, style="|")
+        return dumper.represent_scalar("tag:yaml.org,2002:str", data)
+    yaml.add_representer(str, str_representer)
+
+    return yaml.dump(data, path, sort_keys=False, allow_unicode=True, Dumper=IndentDumper, indent=2, line_break=None,
+                     default_flow_style=False)
+
+
+@installer("Copy YAML metadata to remote host", uninstaller="sbx_metadata:uninstall_yaml")
+def install_yaml(
+    yamlfile: ExportInput = ExportInput("sbx_metadata/[metadata.id].yaml"),
+    marker: OutputMarker = OutputMarker("sbx_metadata.install_yaml_export_marker"),
+    uninstall_marker: MarkerOptional = MarkerOptional("sbx_metadata.uninstall_yaml_export_marker"),
+    export_path: str = Config("sbx_metadata.yaml_export_host"),
+    host: str = Config("sbx_metadata.yaml_export_host")
 ):
-    """Copy JSON metadata to remote host."""
+    """Copy YAML metadata to remote host."""
     if not host:
-        raise SparvErrorMessage("'sbx_metadata.json_export_host' not set! JSON export not installed.")
-    filename = Path(jsonfile).name
+        raise SparvErrorMessage("'sbx_metadata.yaml_export_host' not set! YAML export not installed.")
+    filename = Path(yamlfile).name
     remote_file_path = os.path.join(export_path, filename)
-    util.install.install_path(jsonfile, host, remote_file_path)
+    util.install.install_path(yamlfile, host, remote_file_path)
     uninstall_marker.remove()
     marker.write()
 
 
-@uninstaller("Uninstall JSON metadata")
-def uninstall_json(
+@uninstaller("Uninstall YAML metadata")
+def uninstall_yaml(
     corpus_id: Corpus = Corpus(),
-    marker: OutputMarker = OutputMarker("sbx_metadata.uninstall_json_export_marker"),
-    install_marker: MarkerOptional = MarkerOptional("sbx_metadata.install_json_export_marker"),
-    export_path: str = Config("sbx_metadata.json_export_path"),
-    host: str = Config("sbx_metadata.json_export_host")
+    marker: OutputMarker = OutputMarker("sbx_metadata.uninstall_yaml_export_marker"),
+    install_marker: MarkerOptional = MarkerOptional("sbx_metadata.install_yaml_export_marker"),
+    export_path: str = Config("sbx_metadata.yaml_export_host"),
+    host: str = Config("sbx_metadata.yaml_export_host")
 ):
-    """Uninstall JSON metadata."""
+    """Uninstall YAML metadata."""
     if not host:
-        raise SparvErrorMessage("'sbx_metadata.json_export_host' not set! JSON export not uninstalled.")
-    remote_file_path = os.path.join(export_path, f"{corpus_id}.json")
+        raise SparvErrorMessage("'sbx_metadata.yaml_export_host' not set! YAML export not uninstalled.")
+    remote_file_path = os.path.join(export_path, f"{corpus_id}.yaml")
     util.install.uninstall_path(remote_file_path, host)
     install_marker.remove()
     marker.write()

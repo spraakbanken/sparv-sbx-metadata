@@ -26,6 +26,7 @@ setuptools.setup(
     python_requires=">=3.6.2",
     install_requires=[
         "langcodes[data]>=2.1.0",
+        "pyyaml>=6.0",
         "sparv-pipeline>=5.0.1.dev0",
     ],
     entry_points={"sparv.plugin": ["sbx_metadata = sbx_metadata"]}
