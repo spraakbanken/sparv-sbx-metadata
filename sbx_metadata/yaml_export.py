@@ -65,8 +65,8 @@ def yaml_export(out: Export = Export("sbx_metadata/[metadata.id].yaml"),
 
     # Set size
     md_obj["size"] = {
-        "tokens": tokens.read(),
-        "sentences": sentences.read()
+        "tokens": int(tokens.read()),
+        "sentences": int(sentences.read())
     }
 
     md_obj["in_collections"] = md_in_collections or []
