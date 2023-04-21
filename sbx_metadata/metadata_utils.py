@@ -62,7 +62,7 @@ def make_korp(korp: bool, corpus_id: str, korp_modes: dict):
                 item["access"] = f"{KORP_URL}/#?corpus={corpus_id}"
                 return item
         korp_mode = korp_modes[0].get("name")
-        item["access"] = f"{KORP_URL}/?mode={korp_mode}#corpus={corpus_id}"
+        item["access"] = f"{KORP_URL}/?mode={korp_mode}#?corpus={corpus_id}"
         return item
 
 
