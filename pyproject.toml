@@ -8,7 +8,7 @@ version = "1.0.1"
 description = "Sparv plugin for SBX specific export of metadata"
 readme = "README.md"
 license.text = "MIT License"
-requires-python = ">=3.6.2"
+requires-python = ">=3.8"
 authors = [
     { name = "Språkbanken", email = "sb-info@svenska.gu.se" },
 ]
