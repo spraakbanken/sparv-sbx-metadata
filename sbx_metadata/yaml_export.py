@@ -1,10 +1,10 @@
 """Export corpus metadata to YAML (SBX specific)."""
 
 import os
+import re
 from pathlib import Path
 
 import yaml
-
 from sparv.api import (
     AnnotationCommonData,
     Config,
@@ -25,6 +25,9 @@ from sparv.api import (
 from . import metadata_utils
 
 logger = get_logger(__name__)
+
+# Max length for short_description (if exceeded, a warning will be issued)
+MAX_SHORT_DESC_LEN = 250
 
 
 @exporter("YAML export of corpus metadata")
@@ -55,7 +58,24 @@ def yaml_export(out: Export = Export("sbx_metadata/[metadata.id].yaml"),
     # Only long description available, use it for short_description!
     elif metadata.get("description"):
         set_long_description = False
-        md_obj[f"short_description"] = metadata.get("description", {})
+        md_obj["short_description"] = metadata.get("description", {})
+
+    for lang, short_description in md_obj["short_description"].items():
+        # Warn if short description seems to contain HTML
+        if re.search(r"<([a-z][a-z0-9]+)\b[^>]*>", short_description):
+            logger.warning(
+                f"'short_description' ({lang}) seems to contain HTML."
+                if set_long_description
+                else f"No 'short_description' available and 'description' ({lang}) seems to contain HTML."
+            )
+        # Warn if short description is too long
+        if len(short_description) > MAX_SHORT_DESC_LEN:
+            logger.warning(
+                f"'short_description' ({lang}) is longer than {MAX_SHORT_DESC_LEN} characters."
+                if set_long_description
+                else f"No 'short_description' available and 'description' ({lang}) is longer than {MAX_SHORT_DESC_LEN} "
+                     "characters."
+            )
 
     md_obj["type"] = "corpus"
     md_obj["trainingdata"] = md_trainingdata
