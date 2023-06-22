@@ -169,7 +169,7 @@ def uninstall_yaml(
     corpus_id: Corpus = Corpus(),
     marker: OutputMarker = OutputMarker("sbx_metadata.uninstall_yaml_export_marker"),
     install_marker: MarkerOptional = MarkerOptional("sbx_metadata.install_yaml_export_marker"),
-    export_path: str = Config("sbx_metadata.yaml_export_host"),
+    export_path: str = Config("sbx_metadata.yaml_export_path"),
     host: str = Config("sbx_metadata.yaml_export_host")
 ):
     """Uninstall YAML metadata."""
