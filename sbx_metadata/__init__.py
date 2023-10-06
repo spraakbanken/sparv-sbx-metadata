@@ -5,7 +5,7 @@ from typing import Dict
 
 from sparv.api import Config, wizard
 
-from . import yaml_export, metashare
+from . import yaml_export
 
 __config__ = [
     Config("sbx_metadata.script", default="Latn",
@@ -36,10 +36,6 @@ __config__ = [
            description="List of references or links to publications describing the resource"),
     Config("sbx_metadata.intended_uses", datatype=Dict[str, str], default={"swe": "", "eng": ""},
            description="The intended uses for this resource"),
-    Config("sbx_metadata.metashare_host", "fksparv@bark.spraakdata.gu.se",
-           description="Remote host to copy META-SHARE export to."),
-    Config("sbx_metadata.metashare_path", "/home/fksparv/metadata/meta-share/corpus",
-           description="Path on remote host to copy META-SHARE export to."),
     Config("sbx_metadata.yaml_export_host", "fksparv@bark.spraakdata.gu.se",
            description="Remote host to copy YAML metadata export to."),
     Config("sbx_metadata.yaml_export_path", "/home/fksparv/metadata/yaml/corpus",

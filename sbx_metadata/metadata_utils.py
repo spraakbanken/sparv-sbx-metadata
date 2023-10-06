@@ -6,7 +6,6 @@ from sparv.api import SparvErrorMessage
 KORP_URL = "https://spraakbanken.gu.se/korp"
 MENINGSMANGDER_URL = "https://spraakbanken.gu.se/lb/resurser/meningsmangder"
 STATS_URL = "https://svn.spraakdata.gu.se/sb-arkiv/pub/frekvens"
-METASHARE_URL = "https://svn.spraakdata.gu.se/sb-arkiv/pub/metadata/corpus"
 
 STANDARD_LICENSE = "CC BY 4.0"
 
@@ -64,13 +63,3 @@ def make_korp(korp: bool, corpus_id: str, korp_modes: dict):
         korp_mode = korp_modes[0].get("name")
         item["access"] = f"{KORP_URL}/?mode={korp_mode}#?corpus={corpus_id}"
         return item
-
-
-def make_metashare(corpus_id: str):
-    """Make downloadable object pointing to META-SHARE file."""
-    return {"url": f"{METASHARE_URL}/{corpus_id}.xml",
-            "type": "metadata",
-            "format": "METASHARE",
-            "licence": STANDARD_LICENSE,
-            "restriction": "attribution"
-            }
