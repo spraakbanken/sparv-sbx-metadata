@@ -41,6 +41,12 @@ def yaml_export(out: Export = Export("sbx_metadata/[metadata.id].yaml"),
                 korp_modes: list = Config("korp.modes"),
                 md_trainingdata: bool = Config("sbx_metadata.trainingdata"),
                 md_in_collections: list = Config("sbx_metadata.in_collections"),
+                md_unlisted: bool = Config("sbx_metadata.unlisted"),
+                md_annotation: dict = Config("sbx_metadata.annotation"),
+                md_keywords: list = Config("sbx_metadata.keywords"),
+                md_caveats: dict = Config("sbx_metadata.caveats"),
+                md_references: list = Config("sbx_metadata.references"),
+                md_intended_uses: dict = Config("sbx_metadata.intended_uses"),
                 md_xml_export: str = Config("sbx_metadata.xml_export"),
                 md_stats_export: bool = Config("sbx_metadata.stats_export"),
                 md_korp: bool = Config("sbx_metadata.korp"),
@@ -79,7 +85,7 @@ def yaml_export(out: Export = Export("sbx_metadata/[metadata.id].yaml"),
 
     md_obj["type"] = "corpus"
     md_obj["trainingdata"] = md_trainingdata
-    md_obj["unlisted"] = False
+    md_obj["unlisted"] = md_unlisted
     md_obj["successors"] = []
     md_obj["language_codes"] = [str(lang)]
 
@@ -110,9 +116,17 @@ def yaml_export(out: Export = Export("sbx_metadata/[metadata.id].yaml"),
     else:
         md_obj["contact_info"] = md_contact
 
+    md_obj["annotation"] = md_annotation
+    md_obj["keywords"] = md_keywords
+    md_obj["caveats"] = md_caveats
+    md_obj["references"] = md_references
+    md_obj["intended_uses"] = md_intended_uses
+
     # Set description
     if set_long_description and metadata.get("description"):
-        md_obj[f"description"] = metadata.get("description", {})
+        md_obj["description"] = metadata.get("description", {})
+    else:
+        md_obj["description"] = {"swe": "", "eng": ""}
 
     # Write YAML to file
     os.makedirs(os.path.dirname(out), exist_ok=True)

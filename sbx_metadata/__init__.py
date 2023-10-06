@@ -1,6 +1,7 @@
 """Metadata export (SBX specific)."""
 
 import re
+from typing import Dict
 
 from sparv.api import Config, wizard
 
@@ -18,11 +19,23 @@ __config__ = [
     Config("sbx_metadata.downloads", default=[], description="Downloadable files belonging to the corpus"),
     Config("sbx_metadata.interface", default=[], description="List of interfaces where the corpus is available"),
     Config("sbx_metadata.contact_info", default="sbx-default",
-           description="Object containing information about the contact person"
-           "for the resource"),
+           description="Object containing information about the contact person for the resource"),
     Config("sbx_metadata.trainingdata", default=False, description="Whether the corpus is intended as training data"),
+    Config("sbx_metadata.unlisted", default=False, description="If set to 'true', the resource won't be listed on the "
+           "Språkbanken Text web page, but it will be accessible via its URL"),
     Config("sbx_metadata.in_collections", default=False,
            description="List of material collections that this corpus is a part of"),
+    Config("sbx_metadata.annotation", datatype=Dict[str, str], default={"swe": "", "eng": ""},
+           description="Anything worth to note about the annotations in this corpus. Especially important for corpora "
+           "with gold annotations."),
+    Config("sbx_metadata.keywords", default=[],
+           description="List of keywords (in English) that may be used for filering. Keep them short!"),
+    Config("sbx_metadata.caveats", datatype=Dict[str, str], default={"swe": "", "eng": ""},
+           description="Caveats and disclaimers"),
+    Config("sbx_metadata.references", default=[],
+           description="List of references or links to publications describing the resource"),
+    Config("sbx_metadata.intended_uses", datatype=Dict[str, str], default={"swe": "", "eng": ""},
+           description="The intended uses for this resource"),
     Config("sbx_metadata.metashare_host", "fksparv@bark.spraakdata.gu.se",
            description="Remote host to copy META-SHARE export to."),
     Config("sbx_metadata.metashare_path", "/home/fksparv/metadata/meta-share/corpus",
