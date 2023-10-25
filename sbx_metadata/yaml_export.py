@@ -33,7 +33,7 @@ MAX_SHORT_DESC_LEN = 250
 @exporter("YAML export of corpus metadata")
 def yaml_export(out: Export = Export("sbx_metadata/[metadata.id].yaml"),
                 corpus_id: Corpus = Corpus(),
-                lang: Language = Language(),
+                language: Language = Language(),
                 metadata: dict = Config("metadata"),
                 sentences: AnnotationCommonData = AnnotationCommonData("misc.<sentence>_count"),
                 tokens: AnnotationCommonData = AnnotationCommonData("misc.<token>_count"),
@@ -87,7 +87,7 @@ def yaml_export(out: Export = Export("sbx_metadata/[metadata.id].yaml"),
     md_obj["trainingdata"] = md_trainingdata
     md_obj["unlisted"] = md_unlisted
     md_obj["successors"] = []
-    md_obj["language_codes"] = [str(lang)]
+    md_obj["language_codes"] = [str(language)]
 
     # Set size
     md_obj["size"] = {
