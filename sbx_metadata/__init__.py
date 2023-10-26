@@ -65,9 +65,9 @@ __config__ = [
     ),
     Config(
         "sbx_metadata.in_collections",
-        default=False,
+        default=[],
         description="List of material collections that this corpus is a part of",
-        datatype=bool,
+        datatype=list,
     ),
     Config(
         "sbx_metadata.annotation",

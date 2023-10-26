@@ -95,7 +95,7 @@ def yaml_export(out: Export = Export("sbx_metadata/[metadata.id].yaml"),
         "sentences": int(sentences.read())
     }
 
-    md_obj["in_collections"] = md_in_collections or []
+    md_obj["in_collections"] = md_in_collections
 
     # Set downloads
     downloads = []
