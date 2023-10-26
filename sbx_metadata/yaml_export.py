@@ -165,7 +165,7 @@ def install_yaml(
     yamlfile: ExportInput = ExportInput("sbx_metadata/[metadata.id].yaml"),
     marker: OutputMarker = OutputMarker("sbx_metadata.install_yaml_export_marker"),
     uninstall_marker: MarkerOptional = MarkerOptional("sbx_metadata.uninstall_yaml_export_marker"),
-    export_path: str = Config("sbx_metadata.yaml_export_host"),
+    export_path: str = Config("sbx_metadata.yaml_export_path"),
     host: str = Config("sbx_metadata.yaml_export_host")
 ):
     """Copy YAML metadata to remote host."""
