@@ -66,7 +66,7 @@ def yaml_export(out: Export = Export("sbx_metadata/[metadata.id].yaml"),
         set_long_description = False
         md_obj["short_description"] = metadata.get("description", {})
 
-    for lang, short_description in md_obj["short_description"].items():
+    for lang, short_description in md_obj.get("short_description", {}).items():
         # Warn if short description seems to contain HTML
         if re.search(r"<([a-z][a-z0-9]+)\b[^>]*>", short_description):
             logger.warning(
