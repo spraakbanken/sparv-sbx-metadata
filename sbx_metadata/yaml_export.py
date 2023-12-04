@@ -130,34 +130,11 @@ def yaml_export(out: Export = Export("sbx_metadata/[metadata.id].yaml"),
 
     # Write YAML to file
     os.makedirs(os.path.dirname(out), exist_ok=True)
-    # yaml_str = json.dumps(md_obj, ensure_ascii=False, indent=2)
-    # with open(out, "w", encoding="utf-8") as f:
-    #     f.write(yaml_str)
 
-    with open(out, "w") as yaml_file:
-        _dump_pretty(md_obj, yaml_file)
+    with open(out, "w", encoding="utf-8") as yaml_file:
+        yaml_file.write(util.misc.dump_yaml(md_obj))
+
     logger.info("Exported: %s", out)
-
-
-def _dump_pretty(data, path):
-    """Dump config YAML to string. (stolen from Sparv)"""
-    class IndentDumper(yaml.Dumper):
-        """Customized YAML dumper that indents lists."""
-
-        def increase_indent(self, flow=False, indentless=False):
-            """Force indentation."""
-            return super(IndentDumper, self).increase_indent(flow)
-
-    # Add custom string representer for prettier multiline strings
-    def str_representer(dumper, data):
-        if len(data.splitlines()) > 1:  # Check for multiline string
-            data = '\n'.join([line.rstrip() for line in data.strip().splitlines()])
-            return dumper.represent_scalar("tag:yaml.org,2002:str", data, style="|")
-        return dumper.represent_scalar("tag:yaml.org,2002:str", data)
-    yaml.add_representer(str, str_representer)
-
-    return yaml.dump(data, path, sort_keys=False, allow_unicode=True, Dumper=IndentDumper, indent=2, line_break=None,
-                     default_flow_style=False)
 
 
 @installer("Copy YAML metadata to remote host", uninstaller="sbx_metadata:uninstall_yaml")
