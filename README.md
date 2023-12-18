@@ -44,7 +44,6 @@ sbx_metadata:
   xml_export: scrambled # scrambled/original/false
   stats_export: true  # true/false
   korp: true  # true/false
-  # script: Latn  # default setting
 
   ## 'downloads' and 'interface' are not needed for standard corpora
   # downloads:
@@ -72,4 +71,20 @@ sbx_metadata:
   #   affiliation:
   #     organisation: Språkbanken
   #     email: sb-info@svenska.gu.se
+
+  ## Other optional config values (for mor info check https://github.com/spraakbanken/metadata/blob/main/yaml_templates/corpus.yaml)
+  # trainingdata: false
+  # unlisted: false
+  # in_collections: []
+  # annotation:
+  #   swe: ''
+  #   eng: ''
+  # keywords: []
+  # caveats:
+  #   swe: ''
+  #   eng: ''
+  # references: []
+  # intended_uses:
+  #   swe: ''
+  #   eng: ''
 ```
