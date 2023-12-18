@@ -1,36 +1,115 @@
 """Metadata export (SBX specific)."""
 
 import re
+from typing import Dict, List
 
 from sparv.api import Config, wizard
 
-from . import json_export, metashare
+from . import yaml_export
 
 __config__ = [
-    Config("sbx_metadata.script", default="Latn",
-           description="Writing system used to represent the language of the corpus (ISO-15924)"),
-    # Config("sbx_metadata.linguality", default="monolingual", description="Indicates whether the corpus includes"
-    #        "one, two or more languages (monolingual, bilingual or multilingual)"),
-    Config("sbx_metadata.xml_export", default="scrambled", description="Whether XML export may be published."
-           "Values: scrambled, original, false"),
-    Config("sbx_metadata.stats_export", default=True, description="Whether token frequency export may be published"),
-    Config("sbx_metadata.korp", default=True, description="Whether the corpus will be published in Korp"),
-    Config("sbx_metadata.downloads", default=[], description="Downloadable files belonging to the corpus"),
-    Config("sbx_metadata.interface", default=[], description="List of interfaces where the corpus is available"),
-    Config("sbx_metadata.contact_info", default="sbx-default",
-           description="Object containing information about the contact person"
-           "for the resource"),
-    Config("sbx_metadata.trainingdata", default=False, description="Whether the corpus is intended as training data"),
-    Config("sbx_metadata.in_collections", default=False,
-           description="List of material collections that this corpus is a part of"),
-    Config("sbx_metadata.metashare_host", "fksparv@bark.spraakdata.gu.se",
-           description="Remote host to copy META-SHARE export to."),
-    Config("sbx_metadata.metashare_path", "/home/fksparv/metadata/meta-share/corpus",
-           description="Path on remote host to copy META-SHARE export to."),
-    Config("sbx_metadata.json_export_host", "fksparv@bark.spraakdata.gu.se",
-           description="Remote host to copy JSON metadata export to."),
-    Config("sbx_metadata.json_export_path", "/home/fksparv/metadata/json/corpus",
-           description="Path on remote host to copy JSON metadata export to.")
+    Config(
+        "sbx_metadata.script",
+        default="Latn",
+        description="Writing system used to represent the language of the corpus (ISO-15924)",
+        datatype=str,
+    ),
+    # Config(
+    #     "sbx_metadata.linguality",
+    #     default="monolingual",
+    #     description="Indicates whether the corpus includes one, two or more languages (monolingual, bilingual or "
+    #                 "multilingual)"
+    # ),
+    Config(
+        "sbx_metadata.xml_export",
+        default="scrambled",
+        description="Whether XML export may be published. Values: scrambled, original, false",
+        datatype=str,
+        choices=("scrambled", "original", "false"),
+    ),
+    Config(
+        "sbx_metadata.stats_export",
+        default=True,
+        description="Whether token frequency export may be published",
+        datatype=bool,
+    ),
+    Config(
+        "sbx_metadata.korp", default=True, datatype=bool, description="Whether the corpus will be published in Korp"
+    ),
+    Config(
+        "sbx_metadata.downloads", default=[], datatype=list, description="Downloadable files belonging to the corpus"
+    ),
+    Config(
+        "sbx_metadata.interface",
+        default=[],
+        description="List of interfaces where the corpus is available",
+        datatype=list,
+    ),
+    Config(
+        "sbx_metadata.contact_info",
+        default="sbx-default",
+        description="Object containing information about the contact person for the resource",
+    ),
+    Config(
+        "sbx_metadata.trainingdata",
+        default=False,
+        description="Whether the corpus is intended as training data",
+        datatype=bool,
+    ),
+    Config(
+        "sbx_metadata.unlisted",
+        default=False,
+        description="If set to 'true', the resource won't be listed on the "
+        "Språkbanken Text web page, but it will be accessible via its URL",
+        datatype=bool,
+    ),
+    Config(
+        "sbx_metadata.in_collections",
+        default=[],
+        description="List of material collections that this corpus is a part of",
+        datatype=list,
+    ),
+    Config(
+        "sbx_metadata.annotation",
+        datatype=Dict[str, str],
+        default={"swe": "", "eng": ""},
+        description="Anything worth to note about the annotations in this corpus. Especially important for corpora "
+        "with gold annotations.",
+    ),
+    Config(
+        "sbx_metadata.keywords",
+        default=[],
+        description="List of keywords (in English) that may be used for filering. Keep them short!",
+        datatype=List[str],
+    ),
+    Config(
+        "sbx_metadata.caveats",
+        default={"swe": "", "eng": ""},
+        description="Caveats and disclaimers",
+        datatype=Dict[str, str],
+    ),
+    Config(
+        "sbx_metadata.references",
+        default=[],
+        description="List of references or links to publications describing the resource",
+        datatype=list,
+    ),
+    Config(
+        "sbx_metadata.intended_uses",
+        default={"swe": "", "eng": ""},
+        description="The intended uses for this resource",
+        datatype=Dict[str, str],
+    ),
+    Config(
+        "sbx_metadata.yaml_export_host",
+        "fksparv@bark.spraakdata.gu.se",
+        description="Remote host to copy YAML metadata export to.",
+    ),
+    Config(
+        "sbx_metadata.yaml_export_path",
+        "/home/fksparv/metadata/yaml/corpus",
+        description="Path on remote host to copy YAML metadata export to.",
+    ),
 ]
 
 
@@ -122,14 +201,8 @@ def setup_wizard(corpus_config: dict):
         {
             "when": lambda x: x.get("sbx_metadata.contact_info") != "sbx-default",
             "type": "text",
-            "name": "sbx_metadata.contact_info.givenName",
-            "message": "First name of contact person:"
-        },
-        {
-            "when": lambda x: x.get("sbx_metadata.contact_info") != "sbx-default",
-            "type": "text",
-            "name": "sbx_metadata.contact_info.surname",
-            "message": "Surname of contact person:"
+            "name": "sbx_metadata.contact_info.name",
+            "message": "Name of contact person:"
         },
         {
             "when": lambda x: x.get("sbx_metadata.contact_info") != "sbx-default",
