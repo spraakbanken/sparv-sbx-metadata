@@ -14,7 +14,7 @@ SBX_DEFAULT_CONTACT = {
     "name": "Markus Forsberg",
     "email": "sb-info@svenska.gu.se",
     "affiliation": {
-        "organisation": "Språkbanken",
+        "organisation": "Språkbanken Text",
         "email": "sb-info@svenska.gu.se"
     }
 }

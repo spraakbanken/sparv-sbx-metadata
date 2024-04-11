@@ -216,7 +216,7 @@ def setup_wizard(corpus_config: dict):
             "type": "text",
             "name": "sbx_metadata.contact_info.affiliation.organisation",
             "message": "Name of the organisation the contact person is working for:",
-            "default": {"value": "Språkbanken", "name": "Språkbanken"}
+            "default": {"value": "Språkbanken Text", "name": "Språkbanken Text"}
         },
         {
             "when": lambda x: x.get("sbx_metadata.contact_info") != "sbx-default",
