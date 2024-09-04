@@ -110,6 +110,20 @@ __config__ = [
         "/home/fksparv/metadata/yaml/corpus",
         description="Path on remote host to copy YAML metadata export to.",
     ),
+    Config(
+        "sbx_metadata.created",
+        description="Corpus creation date (YYYY-MM-DD). Today's date will be used by default.",
+        pattern=r"^\d{4}-\d{2}-\d{2}|$",
+        default="",
+        datatype=str,
+    ),
+    Config(
+        "sbx_metadata.updated",
+        description="Corpus update date (YYYY-MM-DD). Today's date will be used by default.",
+        pattern=r"^\d{4}-\d{2}-\d{2}|$",
+        default="",
+        datatype=str,
+    ),
 ]
 
 

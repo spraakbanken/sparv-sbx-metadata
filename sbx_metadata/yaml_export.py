@@ -2,6 +2,7 @@
 
 import os
 import re
+from datetime import datetime
 from pathlib import Path
 
 import yaml
@@ -52,7 +53,9 @@ def yaml_export(out: Export = Export("sbx_metadata/[metadata.id].yaml"),
                 md_korp: bool = Config("sbx_metadata.korp"),
                 md_downloads: list = Config("sbx_metadata.downloads"),
                 md_interface: list = Config("sbx_metadata.interface"),
-                md_contact: dict = Config("sbx_metadata.contact_info")):
+                md_contact: dict = Config("sbx_metadata.contact_info"),
+                md_created: str = Config("sbx_metadata.created"),
+                md_updated: str = Config("sbx_metadata.updated")):
     """Export corpus metadata to YAML format."""
     md_obj = {}
     md_obj["name"] = metadata.get("name", {})
@@ -121,6 +124,8 @@ def yaml_export(out: Export = Export("sbx_metadata/[metadata.id].yaml"),
     md_obj["caveats"] = md_caveats
     md_obj["references"] = md_references
     md_obj["intended_uses"] = md_intended_uses
+    md_obj["created"] = md_created or datetime.now().strftime("%Y-%m-%d")  # Use today's date as default
+    md_obj["updated"] = md_updated or datetime.now().strftime("%Y-%m-%d")  # Use today's date as default
 
     # Set description
     if set_long_description and metadata.get("description"):
