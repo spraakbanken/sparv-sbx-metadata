@@ -142,7 +142,7 @@ def setup_wizard(corpus_config: dict):
     else:
         contact_default = {"value": {}, "name": "Yes"}
 
-    questions = [
+    return [
         {
             "type": "select",
             "name": "sbx_metadata.xml_export",
@@ -241,4 +241,3 @@ def setup_wizard(corpus_config: dict):
             "validate": lambda x: bool(re.match(r"^\S+@+\S+\.\S+$", x.strip()))
         }
     ]
-    return questions

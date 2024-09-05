@@ -2,7 +2,6 @@
 
 from sparv.api import SparvErrorMessage
 
-
 KORP_URL = "https://spraakbanken.gu.se/korp"
 MENINGSMANGDER_URL = "https://spraakbanken.gu.se/lb/resurser/meningsmangder"
 STATS_URL = "https://svn.spraakdata.gu.se/sb-arkiv/pub/frekvens"
@@ -22,8 +21,8 @@ SBX_DEFAULT_CONTACT = {
 
 def make_standard_xml_export(xml_export, corpus_id: str):
     """Make license info object for standard XML export."""
-    if xml_export in ("scrambled", "original"):
-        item = {
+    if xml_export in {"scrambled", "original"}:
+        return {
             "url": f"{MENINGSMANGDER_URL}/{corpus_id}.xml.bz2",
             "type": "corpus",
             "format": "XML",
@@ -31,9 +30,8 @@ def make_standard_xml_export(xml_export, corpus_id: str):
             "licence": STANDARD_LICENSE,
             "restriction": "attribution"
         }
-        return item
     elif not xml_export:
-        return
+        return None
     else:
         raise SparvErrorMessage(f"Invalid config value for sbx_metadata.xml_export: '{xml_export}'. "
                                 "Possible values: 'scrambled', 'original', False")
@@ -49,6 +47,7 @@ def make_standard_stats_export(stats_export: bool, corpus_id: str):
                 "licence": STANDARD_LICENSE,
                 "restriction": "attribution"
                 }
+    return None
 
 
 def make_korp(korp: bool, corpus_id: str, korp_modes: dict):
@@ -63,3 +62,4 @@ def make_korp(korp: bool, corpus_id: str, korp_modes: dict):
         korp_mode = korp_modes[0].get("name")
         item["access"] = f"{KORP_URL}/?mode={korp_mode}#?corpus={corpus_id}"
         return item
+    return None
