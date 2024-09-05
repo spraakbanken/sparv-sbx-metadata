@@ -12,10 +12,7 @@ STANDARD_LICENSE = "CC BY 4.0"
 SBX_DEFAULT_CONTACT = {
     "name": "Markus Forsberg",
     "email": "sb-info@svenska.gu.se",
-    "affiliation": {
-        "organisation": "Språkbanken Text",
-        "email": "sb-info@svenska.gu.se"
-    }
+    "affiliation": {"organisation": "Språkbanken Text", "email": "sb-info@svenska.gu.se"},
 }
 
 
@@ -28,33 +25,35 @@ def make_standard_xml_export(xml_export, corpus_id: str):
             "format": "XML",
             "info": "this file contains a scrambled version of the corpus" if xml_export == "scrambled" else "",
             "licence": STANDARD_LICENSE,
-            "restriction": "attribution"
+            "restriction": "attribution",
         }
     elif not xml_export:
         return None
     else:
-        raise SparvErrorMessage(f"Invalid config value for sbx_metadata.xml_export: '{xml_export}'. "
-                                "Possible values: 'scrambled', 'original', False")
+        raise SparvErrorMessage(
+            f"Invalid config value for sbx_metadata.xml_export: '{xml_export}'. "
+            "Possible values: 'scrambled', 'original', False"
+        )
 
 
 def make_standard_stats_export(stats_export: bool, corpus_id: str):
     """Make license info object for standard token stats export."""
     if stats_export:
-        return {"url": f"{STATS_URL}/stats_{corpus_id}.csv",
-                "type": "token frequencies",
-                "format": "CSV",
-                "info": "",
-                "licence": STANDARD_LICENSE,
-                "restriction": "attribution"
-                }
+        return {
+            "url": f"{STATS_URL}/stats_{corpus_id}.csv",
+            "type": "token frequencies",
+            "format": "CSV",
+            "info": "",
+            "licence": STANDARD_LICENSE,
+            "restriction": "attribution",
+        }
     return None
 
 
 def make_korp(korp: bool, corpus_id: str, korp_modes: dict):
     """Make license info object for standard Korp interface."""
     if korp:
-        item = {"licence": STANDARD_LICENSE,
-                "restriction": "attribution"}
+        item = {"licence": STANDARD_LICENSE, "restriction": "attribution"}
         for mode in korp_modes:
             if mode.get("name") == "default":
                 item["access"] = f"{KORP_URL}/#?corpus={corpus_id}"

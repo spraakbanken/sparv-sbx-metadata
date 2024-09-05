@@ -30,30 +30,32 @@ MAX_SHORT_DESC_LEN = 250
 
 
 @exporter("YAML export of corpus metadata")
-def yaml_export(out: Export = Export("sbx_metadata/[metadata.id].yaml"),
-                corpus_id: Corpus = Corpus(),
-                language: Language = Language(),
-                metadata: dict = Config("metadata"),
-                sentences: AnnotationCommonData = AnnotationCommonData("misc.<sentence>_count"),
-                tokens: AnnotationCommonData = AnnotationCommonData("misc.<token>_count"),
-                # korp_protected: bool = Config("korp.protected"),
-                korp_modes: list = Config("korp.modes"),
-                md_trainingdata: bool = Config("sbx_metadata.trainingdata"),
-                md_in_collections: list = Config("sbx_metadata.in_collections"),
-                md_unlisted: bool = Config("sbx_metadata.unlisted"),
-                md_annotation: dict = Config("sbx_metadata.annotation"),
-                md_keywords: list = Config("sbx_metadata.keywords"),
-                md_caveats: dict = Config("sbx_metadata.caveats"),
-                md_references: list = Config("sbx_metadata.references"),
-                md_intended_uses: dict = Config("sbx_metadata.intended_uses"),
-                md_xml_export: str = Config("sbx_metadata.xml_export"),
-                md_stats_export: bool = Config("sbx_metadata.stats_export"),
-                md_korp: bool = Config("sbx_metadata.korp"),
-                md_downloads: list = Config("sbx_metadata.downloads"),
-                md_interface: list = Config("sbx_metadata.interface"),
-                md_contact: dict = Config("sbx_metadata.contact_info"),
-                md_created: str = Config("sbx_metadata.created"),
-                md_updated: str = Config("sbx_metadata.updated")):
+def yaml_export(
+    out: Export = Export("sbx_metadata/[metadata.id].yaml"),
+    corpus_id: Corpus = Corpus(),
+    language: Language = Language(),
+    metadata: dict = Config("metadata"),
+    sentences: AnnotationCommonData = AnnotationCommonData("misc.<sentence>_count"),
+    tokens: AnnotationCommonData = AnnotationCommonData("misc.<token>_count"),
+    # korp_protected: bool = Config("korp.protected"),
+    korp_modes: list = Config("korp.modes"),
+    md_trainingdata: bool = Config("sbx_metadata.trainingdata"),
+    md_in_collections: list = Config("sbx_metadata.in_collections"),
+    md_unlisted: bool = Config("sbx_metadata.unlisted"),
+    md_annotation: dict = Config("sbx_metadata.annotation"),
+    md_keywords: list = Config("sbx_metadata.keywords"),
+    md_caveats: dict = Config("sbx_metadata.caveats"),
+    md_references: list = Config("sbx_metadata.references"),
+    md_intended_uses: dict = Config("sbx_metadata.intended_uses"),
+    md_xml_export: str = Config("sbx_metadata.xml_export"),
+    md_stats_export: bool = Config("sbx_metadata.stats_export"),
+    md_korp: bool = Config("sbx_metadata.korp"),
+    md_downloads: list = Config("sbx_metadata.downloads"),
+    md_interface: list = Config("sbx_metadata.interface"),
+    md_contact: dict = Config("sbx_metadata.contact_info"),
+    md_created: str = Config("sbx_metadata.created"),
+    md_updated: str = Config("sbx_metadata.updated"),
+):
     """Export corpus metadata to YAML format."""
     md_obj = {"name": metadata.get("name", {})}
 
@@ -80,7 +82,7 @@ def yaml_export(out: Export = Export("sbx_metadata/[metadata.id].yaml"),
                 f"'short_description' ({lang}) is longer than {MAX_SHORT_DESC_LEN} characters."
                 if set_long_description
                 else f"No 'short_description' available and 'description' ({lang}) is longer than {MAX_SHORT_DESC_LEN} "
-                     "characters."
+                "characters."
             )
 
     md_obj["type"] = "corpus"
@@ -90,10 +92,7 @@ def yaml_export(out: Export = Export("sbx_metadata/[metadata.id].yaml"),
     md_obj["language_codes"] = [str(language)]
 
     # Set size
-    md_obj["size"] = {
-        "tokens": int(tokens.read()),
-        "sentences": int(sentences.read())
-    }
+    md_obj["size"] = {"tokens": int(tokens.read()), "sentences": int(sentences.read())}
 
     md_obj["in_collections"] = md_in_collections
 
@@ -101,7 +100,7 @@ def yaml_export(out: Export = Export("sbx_metadata/[metadata.id].yaml"),
     downloads = [
         metadata_utils.make_standard_xml_export(md_xml_export, corpus_id),
         metadata_utils.make_standard_stats_export(md_stats_export, corpus_id),
-        *md_downloads
+        *md_downloads,
     ]
     md_obj["downloads"] = [d for d in downloads if d]
 
@@ -133,7 +132,7 @@ def yaml_export(out: Export = Export("sbx_metadata/[metadata.id].yaml"),
 
     # Write YAML to file
     out_path = Path(out)
-    out_path.mkdir(parents=True, exist_ok=True)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
 
     with out_path.open(mode="w", encoding="utf-8") as yaml_file:
         yaml_file.write(
@@ -151,7 +150,7 @@ def install_yaml(
     marker: OutputMarker = OutputMarker("sbx_metadata.install_yaml_export_marker"),
     uninstall_marker: MarkerOptional = MarkerOptional("sbx_metadata.uninstall_yaml_export_marker"),
     export_path: str = Config("sbx_metadata.yaml_export_path"),
-    host: str = Config("sbx_metadata.yaml_export_host")
+    host: str = Config("sbx_metadata.yaml_export_host"),
 ):
     """Copy YAML metadata to remote host."""
     if not host:
@@ -169,7 +168,7 @@ def uninstall_yaml(
     marker: OutputMarker = OutputMarker("sbx_metadata.uninstall_yaml_export_marker"),
     install_marker: MarkerOptional = MarkerOptional("sbx_metadata.install_yaml_export_marker"),
     export_path: str = Config("sbx_metadata.yaml_export_path"),
-    host: str = Config("sbx_metadata.yaml_export_host")
+    host: str = Config("sbx_metadata.yaml_export_host"),
 ):
     """Uninstall YAML metadata."""
     if not host:
