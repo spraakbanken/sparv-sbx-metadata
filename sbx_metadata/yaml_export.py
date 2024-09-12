@@ -45,7 +45,8 @@ def yaml_export(
     md_annotation: dict = Config("sbx_metadata.annotation"),
     md_keywords: list = Config("sbx_metadata.keywords"),
     md_caveats: dict = Config("sbx_metadata.caveats"),
-    md_references: list = Config("sbx_metadata.references"),
+    md_standard_reference: str = Config("sbx_metadata.standard_reference"),
+    md_other_references: list = Config("sbx_metadata.other_references"),
     md_intended_uses: dict = Config("sbx_metadata.intended_uses"),
     md_xml_export: str = Config("sbx_metadata.xml_export"),
     md_stats_export: bool = Config("sbx_metadata.stats_export"),
@@ -119,7 +120,8 @@ def yaml_export(
     md_obj["annotation"] = md_annotation
     md_obj["keywords"] = md_keywords
     md_obj["caveats"] = md_caveats
-    md_obj["references"] = md_references
+    md_obj["standard_reference"] = md_standard_reference
+    md_obj["other_references"] = md_other_references
     md_obj["intended_uses"] = md_intended_uses
     md_obj["created"] = md_created or datetime.now().strftime("%Y-%m-%d")  # Use today's date as default
     md_obj["updated"] = md_updated or datetime.now().strftime("%Y-%m-%d")  # Use today's date as default

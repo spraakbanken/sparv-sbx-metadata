@@ -89,7 +89,13 @@ __config__ = [
         datatype=Dict[str, str],
     ),
     Config(
-        "sbx_metadata.references",
+        "sbx_metadata.standard_reference",
+        default="",
+        description="A standard reference or link to a publication describing the resource",
+        datatype=str,
+    ),
+    Config(
+        "sbx_metadata.other_references",
         default=[],
         description="List of references or links to publications describing the resource",
         datatype=list,
