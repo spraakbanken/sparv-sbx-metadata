@@ -89,6 +89,12 @@ __config__ = [
         datatype=Dict[str, str],
     ),
     Config(
+        "sbx_metadata.creators",
+        default=[],
+        description="List of people that created the resource (format: lastname, firstname)",
+        datatype=List[str],
+    ),
+    Config(
         "sbx_metadata.standard_reference",
         default="",
         description="A standard reference or link to a publication describing the resource",

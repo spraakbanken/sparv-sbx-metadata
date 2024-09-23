@@ -45,6 +45,7 @@ def yaml_export(
     md_annotation: dict = Config("sbx_metadata.annotation"),
     md_keywords: list = Config("sbx_metadata.keywords"),
     md_caveats: dict = Config("sbx_metadata.caveats"),
+    md_creators: list = Config("sbx_metadata.creators"),
     md_standard_reference: str = Config("sbx_metadata.standard_reference"),
     md_other_references: list = Config("sbx_metadata.other_references"),
     md_intended_uses: dict = Config("sbx_metadata.intended_uses"),
@@ -120,6 +121,7 @@ def yaml_export(
     md_obj["annotation"] = md_annotation
     md_obj["keywords"] = md_keywords
     md_obj["caveats"] = md_caveats
+    md_obj["creators"] = md_creators
     md_obj["standard_reference"] = md_standard_reference
     md_obj["other_references"] = md_other_references
     md_obj["intended_uses"] = md_intended_uses
