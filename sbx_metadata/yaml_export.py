@@ -58,6 +58,7 @@ def yaml_export(
     md_contact: dict = Config("sbx_metadata.contact_info"),
     md_created: str = Config("sbx_metadata.created"),
     md_updated: str = Config("sbx_metadata.updated"),
+    md_doi: str = Config("sbx_metadata.doi"),
 ) -> None:
     """Export corpus metadata to YAML format."""
     md_obj = {"name": metadata.get("name", {})}
@@ -128,6 +129,7 @@ def yaml_export(
     md_obj["intended_uses"] = md_intended_uses
     md_obj["created"] = md_created or datetime.now().strftime("%Y-%m-%d")  # Use today's date as default
     md_obj["updated"] = md_updated or datetime.now().strftime("%Y-%m-%d")  # Use today's date as default
+    md_obj["doi"] = md_doi
 
     # Set description
     if set_long_description and metadata.get("description"):

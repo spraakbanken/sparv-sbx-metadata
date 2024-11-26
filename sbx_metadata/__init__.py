@@ -143,6 +143,13 @@ __config__ = [
         default="",
         datatype=str,
     ),
+    Config(
+        "sbx_metadata.doi",
+        description="Digital Object Identifier (DOI) of the resource",
+        pattern=r"^(.+/.+|)$",
+        default="",
+        datatype=str,
+    ),
 ]
 
 
