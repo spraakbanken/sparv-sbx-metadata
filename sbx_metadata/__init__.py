@@ -1,7 +1,6 @@
 """Metadata export (SBX specific)."""
 
 import re
-from typing import Dict, List
 
 from sparv.api import Config, wizard
 
@@ -78,7 +77,7 @@ __config__ = [
     ),
     Config(
         "sbx_metadata.annotation",
-        datatype=Dict[str, str],
+        datatype=dict[str, str],
         default={"swe": "", "eng": ""},
         description="Anything worth to note about the annotations in this corpus. Especially important for corpora "
         "with gold annotations.",
@@ -87,19 +86,19 @@ __config__ = [
         "sbx_metadata.keywords",
         default=[],
         description="List of keywords (in English) that may be used for filering. Keep them short!",
-        datatype=List[str],
+        datatype=list[str],
     ),
     Config(
         "sbx_metadata.caveats",
         default={"swe": "", "eng": ""},
         description="Caveats and disclaimers",
-        datatype=Dict[str, str],
+        datatype=dict[str, str],
     ),
     Config(
         "sbx_metadata.creators",
         default=[],
         description="List of people that created the resource (format: lastname, firstname)",
-        datatype=List[str],
+        datatype=list[str],
     ),
     Config(
         "sbx_metadata.standard_reference",
@@ -117,7 +116,7 @@ __config__ = [
         "sbx_metadata.intended_uses",
         default={"swe": "", "eng": ""},
         description="The intended uses for this resource",
-        datatype=Dict[str, str],
+        datatype=dict[str, str],
     ),
     Config(
         "sbx_metadata.yaml_export_host",
@@ -155,7 +154,7 @@ __config__ = [
         "sbx_metadata.contact_info",
     ]
 )
-def setup_wizard(corpus_config: dict):
+def setup_wizard(corpus_config: dict) -> list[dict]:
     """Return wizard steps for setting sbx-metadata variables."""
     # Set correct default value for contact information
     if corpus_config.get("sbx_metadata", {}).get("contact_info", "sbx-default") == "sbx-default":

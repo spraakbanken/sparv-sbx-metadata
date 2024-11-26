@@ -58,7 +58,7 @@ def yaml_export(
     md_contact: dict = Config("sbx_metadata.contact_info"),
     md_created: str = Config("sbx_metadata.created"),
     md_updated: str = Config("sbx_metadata.updated"),
-):
+) -> None:
     """Export corpus metadata to YAML format."""
     md_obj = {"name": metadata.get("name", {})}
 
@@ -156,7 +156,7 @@ def install_yaml(
     uninstall_marker: MarkerOptional = MarkerOptional("sbx_metadata.uninstall_yaml_export_marker"),
     export_path: str = Config("sbx_metadata.yaml_export_path"),
     host: str = Config("sbx_metadata.yaml_export_host"),
-):
+) -> None:
     """Copy YAML metadata to remote host."""
     if not host:
         raise SparvErrorMessage("'sbx_metadata.yaml_export_host' not set! YAML export not installed.")
@@ -174,7 +174,7 @@ def uninstall_yaml(
     install_marker: MarkerOptional = MarkerOptional("sbx_metadata.install_yaml_export_marker"),
     export_path: str = Config("sbx_metadata.yaml_export_path"),
     host: str = Config("sbx_metadata.yaml_export_host"),
-):
+) -> None:
     """Uninstall YAML metadata."""
     if not host:
         raise SparvErrorMessage("'sbx_metadata.yaml_export_host' not set! YAML export not uninstalled.")

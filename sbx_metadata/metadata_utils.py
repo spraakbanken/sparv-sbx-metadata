@@ -1,4 +1,5 @@
 """Metadata utilities."""
+from typing import Optional
 
 from sparv.api import SparvErrorMessage
 
@@ -16,7 +17,7 @@ SBX_DEFAULT_CONTACT = {
 }
 
 
-def make_standard_xml_export(xml_export, corpus_id: str):
+def make_standard_xml_export(xml_export: str, corpus_id: str) -> Optional[dict]:
     """Make license info object for standard XML export."""
     if xml_export in {"scrambled", "original"}:
         return {
@@ -36,7 +37,7 @@ def make_standard_xml_export(xml_export, corpus_id: str):
         )
 
 
-def make_standard_stats_export(stats_export: bool, corpus_id: str):
+def make_standard_stats_export(stats_export: bool, corpus_id: str) -> Optional[dict]:
     """Make license info object for standard token stats export."""
     if stats_export:
         return {
@@ -50,7 +51,7 @@ def make_standard_stats_export(stats_export: bool, corpus_id: str):
     return None
 
 
-def make_korp(korp: bool, corpus_id: str, korp_modes: dict):
+def make_korp(korp: bool, corpus_id: str, korp_modes: dict) -> Optional[dict]:
     """Make license info object for standard Korp interface."""
     if korp:
         item = {"licence": STANDARD_LICENSE, "restriction": "attribution"}
