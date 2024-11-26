@@ -1,8 +1,6 @@
 """Metadata utilities."""
 from typing import Optional
 
-from sparv.api import SparvErrorMessage
-
 KORP_URL = "https://spraakbanken.gu.se/korp"
 MENINGSMANGDER_URL = "https://spraakbanken.gu.se/lb/resurser/meningsmangder"
 STATS_URL = "https://svn.spraakdata.gu.se/sb-arkiv/pub/frekvens"
@@ -28,13 +26,7 @@ def make_standard_xml_export(xml_export: str, corpus_id: str) -> Optional[dict]:
             "licence": STANDARD_LICENSE,
             "restriction": "attribution",
         }
-    elif not xml_export:
-        return None
-    else:
-        raise SparvErrorMessage(
-            f"Invalid config value for sbx_metadata.xml_export: '{xml_export}'. "
-            "Possible values: 'scrambled', 'original', False"
-        )
+    return None
 
 
 def make_standard_stats_export(stats_export: bool, corpus_id: str) -> Optional[dict]:

@@ -1,6 +1,7 @@
 """Metadata export (SBX specific)."""
 
 import re
+from typing import Union
 
 from sparv.api import Config, wizard
 
@@ -30,8 +31,8 @@ __config__ = [
         "sbx_metadata.xml_export",
         default="scrambled",
         description="Whether XML export may be published. Values: scrambled, original, false",
-        datatype=str,
-        choices=("scrambled", "original", "false"),
+        datatype=Union[str, bool],
+        choices=("scrambled", "original", "false", False),
     ),
     Config(
         "sbx_metadata.stats_export",
