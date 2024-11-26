@@ -4,18 +4,18 @@ Sparv plugin for SBX specific export of metadata
 
 ## Prerequisites
 
-* [Sparv pipeline](https://github.com/spraakbanken/sparv-pipeline)
+* [Sparv pipeline](https://github.com/spraakbanken/sparv-pipeline) v5
 * [Python 3.9](https://python.org/) or newer
 
 ## Installation
 
-**Option 1:** Installation from GitHub with [pipx](https://pipxproject.github.io/pipx/):
-```bash
+**Option 1:** Installation from GitHub with [pipx](https://pipx.pypa.io/):
+```sh
 pipx inject sparv-pipeline https://github.com/spraakbanken/sparv-sbx-metadata/archive/latest.tar.gz
 ```
 
 **Option 2:** Manual download of plugin and installation in your sparv-pipeline virtual environment:
-```bash
+```sh
 source [path to sparv-pipeline virtual environment]/bin/activate
 pip install [path to the downloaded sparv-sbx-metadata directory]
 ```
