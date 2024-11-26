@@ -14,6 +14,13 @@ __config__ = [
         description="Writing system used to represent the language of the corpus (ISO-15924)",
         datatype=str,
     ),
+    Config(
+        "sbx_metadata.language",
+        default="",
+        description="Language of source files (ISO 639-3). Use this to override metadata.language, for "
+                    "language codes not supported by Sparv.",
+        datatype=str,
+    ),
     # Config(
     #     "sbx_metadata.linguality",
     #     default="monolingual",

@@ -39,6 +39,7 @@ def yaml_export(
     tokens: AnnotationCommonData = AnnotationCommonData("misc.<token>_count"),
     # korp_protected: bool = Config("korp.protected"),
     korp_modes: list = Config("korp.modes"),
+    md_language: bool = Config("sbx_metadata.language"),
     md_trainingdata: bool = Config("sbx_metadata.trainingdata"),
     md_in_collections: list = Config("sbx_metadata.in_collections"),
     md_unlisted: bool = Config("sbx_metadata.unlisted"),
@@ -91,7 +92,7 @@ def yaml_export(
     md_obj["trainingdata"] = md_trainingdata
     md_obj["unlisted"] = md_unlisted
     md_obj["successors"] = []
-    md_obj["language_codes"] = [str(language)]
+    md_obj["language_codes"] = [str(md_language) if md_language else str(language)]
 
     # Set size
     md_obj["size"] = {"tokens": int(tokens.read()), "sentences": int(sentences.read())}
