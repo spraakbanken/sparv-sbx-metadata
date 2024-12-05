@@ -5,7 +5,7 @@ from typing import Union
 
 from sparv.api import Config, wizard
 
-from . import yaml_export
+from . import analysis_metadata_export, yaml_export
 
 __config__ = [
     Config(
