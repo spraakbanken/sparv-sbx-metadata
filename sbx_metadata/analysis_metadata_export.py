@@ -125,12 +125,11 @@ def create_export_files(
             if not data.get("tool"):
                 data["tool"] = "Sparv"
 
-            set_contact_info(data, md_contact)
+            if not data.get("contact_info") and md_contact:
+                data["contact_info"] = metadata_utils.SBX_DEFAULT_CONTACT if md_contact == "sbx-default" else md_contact
 
             # Remove empty fields
-            to_remove = [k for k in data if not data[k]]
-            for k in to_remove:
-                data.pop(k)
+            data = {k: v for k, v in data.items() if v}
 
             export_dir.mkdir(exist_ok=True, parents=True)
             (export_dir / f"{analysis_id}.yaml").write_text(WARNING_MESSAGE + dump_yaml(data), encoding="utf-8")
@@ -153,15 +152,6 @@ def get_annotation_info(annotations: list[str], known: dict) -> tuple[dict, set]
         else:
             unknown_annotations.add(annotation)
     return annotation_info, unknown_annotations
-
-
-def set_contact_info(data: dict, md_contact: Union[str, dict]) -> None:
-    """Set contact info for metadata unless already set."""
-    if not data.get("contact_info") and md_contact:
-        if md_contact == "sbx-default":
-            data["contact_info"] = metadata_utils.SBX_DEFAULT_CONTACT
-        else:
-            data["contact_info"] = md_contact
 
 
 def generate_analysis_example(
