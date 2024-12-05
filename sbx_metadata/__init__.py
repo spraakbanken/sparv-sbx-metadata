@@ -56,6 +56,7 @@ __config__ = [
         "sbx_metadata.contact_info",
         default="sbx-default",
         description="Object containing information about the contact person for the resource",
+        datatype=Union[str, dict],
     ),
     Config(
         "sbx_metadata.trainingdata",
@@ -123,11 +124,13 @@ __config__ = [
         "sbx_metadata.yaml_export_host",
         "fksparv@bark.spraakdata.gu.se",
         description="Remote host to copy YAML metadata export to.",
+        datatype=str,
     ),
     Config(
         "sbx_metadata.yaml_export_path",
         "/home/fksparv/metadata/yaml/corpus",
         description="Path on remote host to copy YAML metadata export to.",
+        datatype=str,
     ),
     Config(
         "sbx_metadata.created",
