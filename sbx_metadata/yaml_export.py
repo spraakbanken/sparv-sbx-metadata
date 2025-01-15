@@ -143,6 +143,9 @@ def yaml_export(
     else:
         md_obj["description"] = {"swe": "", "eng": ""}
 
+    # Remove empty fields
+    md_obj = {k: v for k, v in md_obj.items() if v}
+
     # Write YAML to file
     out_path = Path(out)
     out_path.parent.mkdir(parents=True, exist_ok=True)
