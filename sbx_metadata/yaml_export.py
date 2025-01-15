@@ -162,7 +162,18 @@ def install_yaml(
     export_path: str = Config("sbx_metadata.yaml_export_path"),
     host: str = Config("sbx_metadata.yaml_export_host"),
 ) -> None:
-    """Copy YAML metadata to remote host."""
+    """Copy YAML metadata to remote host.
+
+    Args:
+        yamlfile: Path to the YAML file.
+        marker: Output marker.
+        uninstall_marker: Uninstall marker.
+        export_path: Path on the remote host.
+        host: Host to copy the file to.
+
+    Raises:
+        SparvErrorMessage: If the host is not set.
+    """
     if not host:
         raise SparvErrorMessage("'sbx_metadata.yaml_export_host' not set! YAML export not installed.")
     filename = Path(yamlfile).name
@@ -180,7 +191,18 @@ def uninstall_yaml(
     export_path: str = Config("sbx_metadata.yaml_export_path"),
     host: str = Config("sbx_metadata.yaml_export_host"),
 ) -> None:
-    """Uninstall YAML metadata."""
+    """Uninstall YAML metadata.
+
+    Args:
+        corpus_id: Corpus ID.
+        marker: Output marker.
+        install_marker: Install marker.
+        export_path: Path on the remote host.
+        host: Host on which the file is located.
+
+    Raises:
+        SparvErrorMessage: If the host is not set.
+    """
     if not host:
         raise SparvErrorMessage("'sbx_metadata.yaml_export_host' not set! YAML export not uninstalled.")
     remote_file_path = Path(export_path) / f"{corpus_id}.yaml"

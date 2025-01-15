@@ -1,9 +1,10 @@
 """Exporter for creating metadata files for analyses."""
+from __future__ import annotations
 
 # ruff: noqa: PLC0415
 import re
 from pathlib import Path
-from typing import Optional, Union
+from typing import get_type_hints
 
 import yaml
 from sparv.api import Config, Export, Output, exporter, get_logger
@@ -46,7 +47,18 @@ def create_export_files(
     metadata_files: dict[str, Path],
     plugin_modules: set[str],
 ) -> int:
-    """Create export files from metadata."""
+    """Create export files from metadata.
+
+    Args:
+        export_dir_analysis: Path to the directory where analysis metadata files should be exported.
+        export_dir_utility: Path to the directory where utility metadata files should be exported.
+        md_contact: Contact info to be used in metadata files.
+        metadata_files: Dictionary with module names as keys and metadata file paths as values.
+        plugin_modules: Set of plugin module names.
+
+    Returns:
+        Number of written metadata files.
+    """
     written_counter = 0
 
     for module_name, metadata_file in metadata_files.items():
@@ -129,7 +141,7 @@ def create_export_files(
                 data["contact_info"] = metadata_utils.SBX_DEFAULT_CONTACT if md_contact == "sbx-default" else md_contact
 
             # Remove empty fields
-            data = {k: v for k, v in data.items() if v}
+            data = {k: v for k, v in data.items() if v}  # noqa: PLW2901
 
             export_dir.mkdir(exist_ok=True, parents=True)
             (export_dir / f"{analysis_id}.yaml").write_text(WARNING_MESSAGE + dump_yaml(data), encoding="utf-8")
@@ -139,7 +151,15 @@ def create_export_files(
 
 
 def get_annotation_info(annotations: list[str], known: dict) -> tuple[dict, set]:
-    """Get annotation info for the analysis' list of annotations."""
+    """Get annotation info for the analysis' list of annotations.
+
+    Args:
+        annotations: List of annotations.
+        known: Known data about the module.
+
+    Returns:
+        A tuple with a dictionary of annotation info and a set of unknown annotations.
+    """
     # Handle wildcard annotations by using regex
     known_annotation_patterns = {re.sub(r"\\{.+?\\}", ".+", re.escape(a)): d for a, d in known["annotations"].items()}
     unknown_annotations = set()
@@ -160,9 +180,18 @@ def generate_analysis_example(
     annotation_info: dict,
     plugin_modules: set[str],
     module_name: str,
-    example_output: Optional[str],
+    example_output: str | None,
 ) -> None:
-    """Update data dictionary with a generated example unless one is already manually set."""
+    """Update data dictionary with a generated example unless one is already manually set.
+
+    Args:
+        data: Data dictionary to update.
+        annotations: List of annotations.
+        annotation_info: Dictionary with annotation info.
+        plugin_modules: Set of plugin module names.
+        module_name: Name of the module.
+        example_output: Example output for the analysis.
+    """
     plugin_info = ""
     if module_name in plugin_modules:
         plugin_url = data.pop("plugin_url", None)
@@ -235,7 +264,12 @@ def set_analysis_unit(data: dict, annotations: list[str], annotation_info: dict[
 
 
 def find_metadata_files() -> tuple[dict[str, Path], set[str]]:
-    """Find all metadata files for Sparv modules and plugins."""
+    """Find all metadata files for Sparv modules and plugins.
+
+    Returns:
+        A tuple with a dictionary of module names as keys and metadata file paths as values, and a set of plugin
+        module names
+    """
     import importlib
     import pkgutil
 
@@ -280,7 +314,14 @@ def find_metadata_files() -> tuple[dict[str, Path], set[str]]:
 
 
 def collect_known(module_name: str) -> dict:
-    """Collect data about a module, to be used for validation."""
+    """Collect data about a module, to be used for validation.
+
+    Args:
+        module_name: Name of the module.
+
+    Returns:
+        A dictionary with known data about the module.
+    """
     import inspect
 
     known = {
@@ -290,6 +331,9 @@ def collect_known(module_name: str) -> dict:
     }
     for f_name, f in registry.modules[module_name].functions.items():
         if f["type"] == registry.Annotator.annotator:
+            # Convert type hints from strings to actual types (needed because of __future__.annotations)
+            # TODO: Use the eval_str parameter for inspect.signature instead, once we target Python 3.10
+            f["function"].__annotations__ = get_type_hints(f["function"])
             params = make_param_dict(inspect.signature(f["function"]).parameters)
             for param in params:
                 if params[param][1] is Output:
