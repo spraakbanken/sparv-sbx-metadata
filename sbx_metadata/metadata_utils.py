@@ -7,11 +7,12 @@ STATS_URL = "https://svn.spraakdata.gu.se/sb-arkiv/pub/frekvens"
 
 STANDARD_LICENSE = "CC BY 4.0"
 
+DEFAULT_CODE_LICENSE = "MIT License"
 
 SBX_DEFAULT_CONTACT = {
     "name": "Markus Forsberg",
     "email": "sb-info@svenska.gu.se",
-    "affiliation": {"organisation": "Språkbanken Text", "email": "sb-info@svenska.gu.se"},
+    "affiliation": {"organization": "Språkbanken Text", "email": "sb-info@svenska.gu.se"},
 }
 
 
@@ -30,9 +31,8 @@ def make_standard_xml_export(xml_export: str, corpus_id: str) -> dict | None:
             "url": f"{MENINGSMANGDER_URL}/{corpus_id}.xml.bz2",
             "type": "corpus",
             "format": "XML",
-            "info": "this file contains a scrambled version of the corpus" if xml_export == "scrambled" else "",
-            "licence": STANDARD_LICENSE,
-            "restriction": "attribution",
+            "description": "this file contains a scrambled version of the corpus" if xml_export == "scrambled" else "",
+            "license": STANDARD_LICENSE,
         }
     return None
 
@@ -52,9 +52,8 @@ def make_standard_stats_export(stats_export: bool, corpus_id: str) -> dict | Non
             "url": f"{STATS_URL}/stats_{corpus_id}.csv",
             "type": "token frequencies",
             "format": "CSV",
-            "info": "",
-            "licence": STANDARD_LICENSE,
-            "restriction": "attribution",
+            "description": "",
+            "license": STANDARD_LICENSE,
         }
     return None
 
@@ -71,7 +70,7 @@ def make_korp(korp: bool, corpus_id: str, korp_modes: dict) -> dict | None:
         License info object or None.
     """
     if korp:
-        item = {"licence": STANDARD_LICENSE, "restriction": "attribution"}
+        item = {"license": STANDARD_LICENSE}
         for mode in korp_modes:
             if mode.get("name") == "default":
                 item["access"] = f"{KORP_URL}/#?corpus={corpus_id}"

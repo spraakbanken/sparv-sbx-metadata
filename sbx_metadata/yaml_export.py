@@ -60,7 +60,7 @@ def yaml_export(
     md_stats_export: bool = Config("sbx_metadata.stats_export"),
     md_korp: bool = Config("sbx_metadata.korp"),
     md_downloads: list = Config("sbx_metadata.downloads"),
-    md_interface: list = Config("sbx_metadata.interface"),
+    md_interfaces: list = Config("sbx_metadata.interfaces"),
     md_contact: dict = Config("sbx_metadata.contact_info"),
     md_created: str = Config("sbx_metadata.created"),
     md_updated: str = Config("sbx_metadata.updated"),
@@ -114,11 +114,11 @@ def yaml_export(
     ]
     md_obj["downloads"] = [d for d in downloads if d]
 
-    # Set interface
-    interface = []
-    interface.append(metadata_utils.make_korp(md_korp, corpus_id, korp_modes))
-    interface.extend(md_interface)
-    md_obj["interface"] = [d for d in interface if d]
+    # Set interfaces
+    interfaces = []
+    interfaces.append(metadata_utils.make_korp(md_korp, corpus_id, korp_modes))
+    interfaces.extend(md_interfaces)
+    md_obj["interfaces"] = [d for d in interfaces if d]
 
     # Set contact info
     if md_contact == "sbx-default":

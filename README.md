@@ -45,24 +45,21 @@ sbx_metadata:
   stats_export: true  # true/false
   korp: true  # true/false
 
-  ## 'downloads' and 'interface' are not needed for standard corpora
+  ## 'downloads' and 'interfaces' are not needed for standard corpora
   # downloads:
   #   - url: http://spraakbanken.gu.se/lb/resurser/meningsmangder/gp-test.xml.bz2
   #     type: corpus
   #     format: XML
-  #     info: this file contains a scrambled version of the corpus
-  #     licence: CC BY 4.0
-  #     restriction: attribution
+  #     description: this file contains a scrambled version of the corpus
+  #     license: CC BY 4.0
   #   - url: https://svn.spraakdata.gu.se/sb-arkiv/pub/frekvens/gp-test.csv
   #     type: token frequencies
   #     format: XML
-  #     info: ""
-  #     licence: CC BY 4.0
-  #     restriction: attribution
-  # interface:
+  #     description: ""
+  #     license: CC BY 4.0
+  # interfaces:
   #   - access: http://spraakbanken.gu.se/korp/#?corpus=gp-test
-  #     licence: CC BY 4.0
-  #     restriction: attribution
+  #     license: CC BY 4.0
 
   ## 'contact_info' is only needed if somebody else is the contact person for the corpus
   # contact_info:

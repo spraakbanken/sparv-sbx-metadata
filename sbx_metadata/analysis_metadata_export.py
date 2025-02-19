@@ -52,7 +52,7 @@ def create_export_files(
     Args:
         export_dir_analysis: Path to the directory where analysis metadata files should be exported.
         export_dir_utility: Path to the directory where utility metadata files should be exported.
-        md_contact: Contact info to be used in metadata files.
+        md_contact: Default contact info to be used in metadata files.
         metadata_files: Dictionary with module names as keys and metadata file paths as values.
         plugin_modules: Set of plugin module names.
 
@@ -91,6 +91,7 @@ def create_export_files(
             all_ids.add(analysis_id)
             annotations = data.pop("annotations", None)
             example_output = data.pop("example_output", None)
+            example_extra = data.pop("example_extra", None)
 
             if data.get("type") == "analysis" or annotations:
                 if not annotations:
@@ -113,13 +114,13 @@ def create_export_files(
 
                 set_analysis_unit(data, annotations, annotation_info)
                 generate_analysis_example(
-                    data, annotations, annotation_info, plugin_modules, module_name, example_output
+                    data, annotations, annotation_info, plugin_modules, module_name, example_output, example_extra
                 )
 
             elif data.get("type") == "utility" or data.get("sparv_handler"):
                 data["type"] = "utility"
                 export_dir = export_dir_utility
-                handler = data["sparv_handler"]
+                handler = data.pop("sparv_handler", None)
 
                 if handler in known["importers"]:
                     handler_type = "importer"
@@ -134,8 +135,9 @@ def create_export_files(
                 logger.error("Analysis metadata '%s' in module '%s' is of an unknown type.", analysis_id, module_name)
                 continue
 
-            if not data.get("tool"):
-                data["tool"] = "Sparv"
+            # Automatically set code license if not set and the code is not a plugin
+            if module_name not in plugin_modules and not data.get("license"):
+                data["license"] = metadata_utils.DEFAULT_CODE_LICENSE
 
             if not data.get("contact_info") and md_contact:
                 data["contact_info"] = metadata_utils.SBX_DEFAULT_CONTACT if md_contact == "sbx-default" else md_contact
@@ -181,6 +183,7 @@ def generate_analysis_example(
     plugin_modules: set[str],
     module_name: str,
     example_output: str | None,
+    example_extra: str | None,
 ) -> None:
     """Update data dictionary with a generated example unless one is already manually set.
 
@@ -191,6 +194,7 @@ def generate_analysis_example(
         plugin_modules: Set of plugin module names.
         module_name: Name of the module.
         example_output: Example output for the analysis.
+        example_extra: Extra example text to be added to the example.
     """
     plugin_info = ""
     if module_name in plugin_modules:
@@ -203,7 +207,6 @@ def generate_analysis_example(
         )
     # TODO: Add link to Mink if the analysis is available there (based on collection or something else)
     if not data.get("example"):
-        example_extra = data.pop("example_extra", None)
         data["example"] = (
             "This analysis is used with Sparv. Check out [Sparv's quick start guide]"
             "(https://spraakbanken.gu.se/sparv/#/user-manual/quick-start) to get started!\n"
@@ -214,7 +217,7 @@ def generate_analysis_example(
             "(https://spraakbanken.gu.se/sparv/#/user-manual/quick-start?id=creating-the-config-file):\n"
             "\n"
             "```yaml\n"
-            f"{"\n".join(f"- {a}  # {annotation_info[a].description}" for a in annotations)}\n"
+            f"{'\n'.join(f'- {a}  # {annotation_info[a].description}' for a in annotations)}\n"
             "```\n"
             "\n"
             f"{example_extra + '\n\n' if example_extra else ''}"

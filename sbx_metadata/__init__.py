@@ -47,7 +47,7 @@ __config__ = [
         "sbx_metadata.downloads", default=[], datatype=list, description="Downloadable files belonging to the corpus"
     ),
     Config(
-        "sbx_metadata.interface",
+        "sbx_metadata.interfaces",
         default=[],
         description="List of interfaces where the corpus is available",
         datatype=list,
