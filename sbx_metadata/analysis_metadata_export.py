@@ -1,10 +1,9 @@
 """Exporter for creating metadata files for analyses."""
-from __future__ import annotations
 
 # ruff: noqa: PLC0415
 import re
 from pathlib import Path
-from typing import get_type_hints
+from typing import Optional, get_type_hints
 
 import yaml
 from sparv.api import Config, Export, Output, exporter, get_logger
@@ -130,7 +129,7 @@ def create_export_files(
                     logger.error("Unknown handler in '%s' for module '%s': '%s'", analysis_id, module_name, handler)
                     continue
 
-                generate_utility_example(data, handler, handler_type)
+                generate_utility_example(data, handler, handler_type, example_extra)
             else:
                 logger.error("Analysis metadata '%s' in module '%s' is of an unknown type.", analysis_id, module_name)
                 continue
@@ -182,8 +181,8 @@ def generate_analysis_example(
     annotation_info: dict,
     plugin_modules: set[str],
     module_name: str,
-    example_output: str | None,
-    example_extra: str | None,
+    example_output: Optional[str],
+    example_extra: Optional[str],
 ) -> None:
     """Update data dictionary with a generated example unless one is already manually set.
 
@@ -207,6 +206,8 @@ def generate_analysis_example(
         )
     # TODO: Add link to Mink if the analysis is available there (based on collection or something else)
     if not data.get("example"):
+        example_extra = example_extra + "\n\n" if example_extra else ""
+        annotations_list = "\n".join(f"- {a}  # {annotation_info[a].description}" for a in annotations)
         data["example"] = (
             "This analysis is used with Sparv. Check out [Sparv's quick start guide]"
             "(https://spraakbanken.gu.se/sparv/#/user-manual/quick-start) to get started!\n"
@@ -217,10 +218,10 @@ def generate_analysis_example(
             "(https://spraakbanken.gu.se/sparv/#/user-manual/quick-start?id=creating-the-config-file):\n"
             "\n"
             "```yaml\n"
-            f"{'\n'.join(f'- {a}  # {annotation_info[a].description}' for a in annotations)}\n"
+            f"{annotations_list}\n"
             "```\n"
             "\n"
-            f"{example_extra + '\n\n' if example_extra else ''}"
+            f"{example_extra}"
             f"{plugin_info}"
             "For more info on how to use Sparv, check out the [Sparv documentation]"
             "(https://spraakbanken.gu.se/sparv).\n"
@@ -229,10 +230,10 @@ def generate_analysis_example(
         data["example"] += f"\nExample output:\n{example_output.strip()}"
 
 
-def generate_utility_example(data: dict, handler: str, handler_type: str) -> None:
+def generate_utility_example(data: dict, handler: str, handler_type: str, example_extra: Optional[str]) -> None:
     """Update data dictionary with a generated example unless one is already manually set."""
     if not data.get("example"):
-        example_extra = data.get("example_extra")
+        example_extra = example_extra + "\n\n" if example_extra else ""
         data["example"] = (
             f"This {handler_type} is used with Sparv. Check out [Sparv's quick start guide]"
             "(https://spraakbanken.gu.se/sparv/#/user-manual/quick-start) to get started!\n"
@@ -242,7 +243,7 @@ def generate_utility_example(data: dict, handler: str, handler_type: str) -> Non
             f"sparv run {handler}\n"
             "```\n"
             "\n"
-            f"{example_extra + '\n\n' if example_extra else ''}"
+            f"{example_extra}"
             "For more info on how to use Sparv, check out the [Sparv documentation]"
             "(https://spraakbanken.gu.se/sparv).\n"
         )
