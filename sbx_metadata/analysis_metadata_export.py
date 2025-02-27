@@ -1,6 +1,7 @@
 """Exporter for creating metadata files for analyses."""
 
 # ruff: noqa: PLC0415
+# ruff: noqa: FA100 # For Python 3.9 compatibility
 import re
 from pathlib import Path
 from typing import Optional, get_type_hints
@@ -8,7 +9,8 @@ from typing import Optional, get_type_hints
 import yaml
 from sparv.api import Config, Export, Output, exporter, get_logger
 from sparv.api.util.misc import dump_yaml
-from sparv.core import paths, registry
+from sparv.core import registry
+from sparv.core.paths import paths
 from sparv.core.snake_utils import make_param_dict
 
 from . import metadata_utils
