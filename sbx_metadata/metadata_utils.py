@@ -73,9 +73,9 @@ def make_korp(korp: bool, corpus_id: str, korp_modes: dict) -> Optional[dict]:
         item = {"license": STANDARD_LICENSE}
         for mode in korp_modes:
             if mode.get("name") == "default":
-                item["access"] = f"{KORP_URL}/#?corpus={corpus_id}"
+                item["url"] = f"{KORP_URL}/#?corpus={corpus_id}"
                 return item
         korp_mode = korp_modes[0].get("name")
-        item["access"] = f"{KORP_URL}/?mode={korp_mode}#?corpus={corpus_id}"
+        item["url"] = f"{KORP_URL}/?mode={korp_mode}#?corpus={corpus_id}"
         return item
     return None
