@@ -18,7 +18,7 @@ __config__ = [
         "sbx_metadata.language",
         default="",
         description="Language of source files (ISO 639-3). Use this to override metadata.language, for "
-                    "language codes not supported by Sparv.",
+        "language codes not supported by Sparv.",
         datatype=str,
     ),
     # Config(
@@ -122,14 +122,15 @@ __config__ = [
     ),
     Config(
         "sbx_metadata.yaml_export_host",
-        "fksparv@bark.spraakdata.gu.se",
-        description="Remote host to copy YAML metadata export to.",
+        default="git+",
+        description="Remote host to copy YAML metadata export to, or 'git+' for committing to local Git repository.",
         datatype=str,
     ),
     Config(
         "sbx_metadata.yaml_export_path",
-        "/home/fksparv/metadata/yaml/corpus",
-        description="Path on remote host to copy YAML metadata export to.",
+        default="/home/fksparv/metadata/yaml/corpus",
+        description="Path on remote host to copy YAML metadata export to, or path to a local git repository to commit "
+        "to.",
         datatype=str,
     ),
     Config(
