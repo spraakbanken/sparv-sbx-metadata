@@ -49,7 +49,7 @@ def make_standard_stats_export(stats_export: bool, corpus_id: str) -> Optional[d
     """
     if stats_export:
         return {
-            "url": f"{STATS_URL}/stats_{corpus_id}.csv",
+            "url": f"{STATS_URL}/stats_{corpus_id}.csv.zip",
             "type": "token frequencies",
             "format": "CSV",
             "description": "",
