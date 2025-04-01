@@ -159,7 +159,7 @@ def yaml_export(
 
 
 @installer("Copy YAML metadata to remote host or commit to local Git repository",
-           uninstaller="sbx_metadata:uninstall_yaml")
+           uninstaller="sbx_metadata:uninstall_yaml", priority=-1)
 def install_yaml(
     yamlfile: ExportInput = ExportInput("sbx_metadata/[metadata.id].yaml"),
     marker: OutputMarker = OutputMarker("sbx_metadata.install_yaml_export_marker"),
