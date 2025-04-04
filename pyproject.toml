@@ -7,7 +7,7 @@ name = "sparv-sbx-metadata"
 version = "2.1.0"
 description = "Sparv plugin for SBX specific export of metadata"
 readme = "README.md"
-license.text = "MIT License"
+license = "MIT"
 requires-python = ">=3.9"
 authors = [
     { name = "Språkbanken Text", email = "sb-info@svenska.gu.se" },
