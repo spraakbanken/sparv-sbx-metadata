@@ -10,7 +10,11 @@ import yaml
 from sparv.api import Config, Export, Output, exporter, get_logger
 from sparv.api.util.misc import dump_yaml
 from sparv.core import registry
-from sparv.core.paths import paths
+
+try:
+    from sparv.core.paths import paths
+except ImportError:  # For compatibility with older versions of Sparv 5
+    from sparv.core import paths
 from sparv.core.snake_utils import make_param_dict
 
 from . import metadata_utils
