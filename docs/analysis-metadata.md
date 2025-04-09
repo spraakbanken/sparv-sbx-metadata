@@ -177,11 +177,11 @@ directory](https://spraakbanken.gu.se/sparv/user-manual/preparing-your-corpus/#t
 and run the following command:
 
 ```sh
-sparv run sbx_metadata:analysis_metadata_export
+sparv run sbx_metadata:plugin_analysis_metadata_export
 ```
 
 This will generate SBX metadata files and place them in the `export/sbx_metadata/` directory. Note that metadata will be
-generated for all available analyses, not just those in your plugin.
+generated for *all* installed plugins, not just your plugin.
 
 Next, add the relevant generated metadata files to [Språkbanken Text's metadata
 repository](https://github.com/spraakbanken/metadata/tree/main/yaml/analysis) in the `yaml/analysis` directory. This

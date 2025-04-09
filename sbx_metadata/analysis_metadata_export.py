@@ -45,12 +45,33 @@ def analysis_metadata_export(
     logger.info("%d metadata files exported", written_counter)
 
 
+@exporter(description="YAML export of Sparv analysis metadata (plugins only)")
+def plugin_analysis_metadata_export(
+    out: Export = Export("sbx_metadata/.dummy_plugin"),
+    md_contact: dict = Config("sbx_metadata.contact_info"),
+) -> None:
+    """Export metadata for Sparv analyses (plugins only)."""
+    # Export dirs
+    export_dir_analysis = Path(out).parent / "analysis"
+    export_dir_utility = Path(out).parent / "utility"
+
+    metadata_files, plugin_modules = find_metadata_files()
+    written_counter = create_export_files(
+        export_dir_analysis, export_dir_utility, md_contact, metadata_files, plugin_modules, plugins_only=True
+    )
+
+    # Create dummy output (since Sparv requires a known output)
+    Path(out).touch()
+    logger.info("%d metadata files exported", written_counter)
+
+
 def create_export_files(
     export_dir_analysis: Path,
     export_dir_utility: Path,
     md_contact: dict,
     metadata_files: dict[str, Path],
     plugin_modules: set[str],
+    plugins_only: bool = False,
 ) -> int:
     """Create export files from metadata.
 
@@ -60,6 +81,7 @@ def create_export_files(
         md_contact: Default contact info to be used in metadata files.
         metadata_files: Dictionary with module names as keys and metadata file paths as values.
         plugin_modules: Set of plugin module names.
+        plugins_only: Flag to indicate if only plugin metadata should be exported.
 
     Returns:
         Number of written metadata files.
@@ -67,6 +89,9 @@ def create_export_files(
     written_counter = 0
 
     for module_name, metadata_file in metadata_files.items():
+        if plugins_only and module_name not in plugin_modules:
+            # Skip non-plugin modules
+            continue
         # Collect data to be used for validation
         known = collect_known(module_name)
         parents = {}
