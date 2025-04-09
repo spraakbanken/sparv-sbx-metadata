@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "sparv-sbx-metadata"
-version = "2.1.0"
+version = "2.2.0"
 description = "Sparv plugin for SBX specific export of metadata"
 readme = "README.md"
 license = "MIT"
