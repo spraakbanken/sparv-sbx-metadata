@@ -12,7 +12,7 @@ Sparv plugin for SBX specific export of metadata, including resource metadata an
 Install the latest stable version from GitHub, either with [pipx](https://pipx.pypa.io/):
 
 ```sh
-pipx inject sparv-pipeline https://github.com/spraakbanken/sparv-sbx-metadata/archive/main.zip
+pipx inject sparv https://github.com/spraakbanken/sparv-sbx-metadata/archive/main.zip
 ```
 
 or with pip (make sure to activate your virtual environment first):

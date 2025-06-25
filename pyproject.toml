@@ -15,7 +15,7 @@ authors = [
 dependencies = [
     "langcodes[data]>=2.1.0",
     "pyyaml>=6.0",
-    "sparv-pipeline~=5.0",
+    "sparv~=5.0",
 ]
 entry-points."sparv.plugin" = { sbx_metadata = "sbx_metadata" }
 
