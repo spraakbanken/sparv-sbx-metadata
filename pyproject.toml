@@ -4,11 +4,11 @@ build-backend = "hatchling.build"
 
 [project]
 name = "sparv-sbx-metadata"
-version = "2.2.0"
+version = "2.3.0"
 description = "Sparv plugin for SBX specific export of metadata"
 readme = "README.md"
 license = "MIT"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 authors = [
     { name = "Språkbanken Text", email = "sb-info@svenska.gu.se" },
 ]
