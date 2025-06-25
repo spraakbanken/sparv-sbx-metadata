@@ -233,7 +233,8 @@ def generate_analysis_example(
         plugin_info = (
             f"You also need to install the following plugin: *{plugin_link}*.\n\n"
             "For general information on how to install plugins, see [here]"
-            "(https://spraakbanken.gu.se/sparv/#/user-manual/installation-and-setup?id=plugins).\n\n"
+            "(https://spraakbanken.gu.se/sparv/user-manual/installation-and-setup/#installing-and-uninstalling-plugins)"
+            ".\n\n"
         )
     # TODO: Add link to Mink if the analysis is available there (based on collection or something else)
     if not data.get("example"):
@@ -241,12 +242,12 @@ def generate_analysis_example(
         annotations_list = "\n".join(f"- {a}  # {annotation_info[a].description}" for a in annotations)
         data["example"] = (
             "This analysis is used with Sparv. Check out [Sparv's quick start guide]"
-            "(https://spraakbanken.gu.se/sparv/#/user-manual/quick-start) to get started!\n"
+            "(https://spraakbanken.gu.se/sparv/user-manual/quick-start/) to get started!\n"
             "\n"
             "To use this analysis, add the following "
             f"line{'s' if len(annotations) > 1 else ''} under `export.annotations` in the Sparv "
             "[corpus configuration file]"
-            "(https://spraakbanken.gu.se/sparv/#/user-manual/quick-start?id=creating-the-config-file):\n"
+            "(https://spraakbanken.gu.se/sparv/user-manual/quick-start/#creating-the-config-file):\n"
             "\n"
             "```yaml\n"
             f"{annotations_list}\n"
@@ -267,7 +268,7 @@ def generate_utility_example(data: dict, handler: str, handler_type: str, exampl
         example_extra = example_extra + "\n\n" if example_extra else ""
         data["example"] = (
             f"This {handler_type} is used with Sparv. Check out [Sparv's quick start guide]"
-            "(https://spraakbanken.gu.se/sparv/#/user-manual/quick-start) to get started!\n"
+            "(https://spraakbanken.gu.se/sparv/user-manual/quick-start/) to get started!\n"
             "\n"
             f"To use this {handler_type}, run Sparv with the argument '{handler}':\n\n"
             "```sh\n"
