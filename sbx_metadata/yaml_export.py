@@ -2,9 +2,10 @@
 
 import re
 from datetime import datetime
+from json import JSONDecodeError
 from pathlib import Path
-from typing import Optional
 
+import requests
 from sparv.api import (
     AnnotationCommonData,
     Config,
@@ -46,6 +47,7 @@ def yaml_export(
     tokens: AnnotationCommonData = AnnotationCommonData("misc.<token>_count"),
     # korp_protected: bool = Config("korp.protected"),
     korp_modes: list = Config("korp.modes"),
+    metadata_api: str = Config("sbx_metadata.api_url"),
     md_language: bool = Config("sbx_metadata.language"),
     md_trainingdata: bool = Config("sbx_metadata.trainingdata"),
     md_in_collections: list = Config("sbx_metadata.in_collections"),
@@ -127,16 +129,35 @@ def yaml_export(
     else:
         md_obj["contact_info"] = md_contact
 
-    md_obj["annotation"] = md_annotation
-    md_obj["keywords"] = md_keywords
-    md_obj["caveats"] = md_caveats
-    md_obj["creators"] = md_creators
-    md_obj["standard_reference"] = md_standard_reference
-    md_obj["other_references"] = md_other_references
-    md_obj["intended_uses"] = md_intended_uses
+    # Add optional metadata fields if they are present
+    optional_fields = {
+        "annotation": md_annotation,
+        "keywords": md_keywords,
+        "caveats": md_caveats,
+        "creators": md_creators,
+        "standard_reference": md_standard_reference,
+        "other_references": md_other_references,
+        "intended_uses": md_intended_uses,
+        "doi": md_doi,
+    }
+    md_obj.update({key: value for key, value in optional_fields.items() if value})
+
+    # Look up existing DOI
+    if not md_doi and metadata_api:
+        try:
+            url = f"{metadata_api}?resource={corpus_id}"
+            logger.info("Looking up existing DOI from API: %s", url)
+            response = requests.get(url, timeout=10)
+            if existing_doi := response.json().get("doi"):
+                md_obj["doi"] = existing_doi
+                logger.info("Found existing DOI: %s", existing_doi)
+        except requests.RequestException as e:
+            logger.warning("Failed to fetch existing DOI from API: %s", e)
+        except JSONDecodeError as e:
+            logger.warning("Failed to decode JSON response from API: %s", e)
+
     md_obj["created"] = md_created or datetime.now().strftime("%Y-%m-%d")  # Use today's date as default
     md_obj["updated"] = md_updated or datetime.now().strftime("%Y-%m-%d")  # Use today's date as default
-    md_obj["doi"] = md_doi
 
     # Set description
     if set_long_description and metadata.get("description"):
@@ -164,8 +185,8 @@ def install_yaml(
     yamlfile: ExportInput = ExportInput("sbx_metadata/[metadata.id].yaml"),
     marker: OutputMarker = OutputMarker("sbx_metadata.install_yaml_export_marker"),
     uninstall_marker: MarkerOptional = MarkerOptional("sbx_metadata.uninstall_yaml_export_marker"),
-    export_path: Optional[str] = Config("sbx_metadata.yaml_export_path"),
-    host: Optional[str] = Config("sbx_metadata.yaml_export_host"),
+    export_path: str = Config("sbx_metadata.yaml_export_path"),
+    host: str | None = Config("sbx_metadata.yaml_export_host"),
 ) -> None:
     """Copy YAML metadata to remote host or install to Git repository.
 
@@ -179,11 +200,8 @@ def install_yaml(
     Raises:
         SparvErrorMessage: If neither the host nor export path is set.
     """
-    if not host and not export_path:
-        raise SparvErrorMessage(
-            "Either 'sbx_metadata.yaml_export_host' or 'sbx_metadata.yaml_export_path' must be specified. YAML export"
-            "not installed."
-        )
+    if not export_path:
+        raise SparvErrorMessage("'sbx_metadata.yaml_export_path' must be specified. YAML export not installed.")
     if host and host.startswith("git+"):
         util.install.install_git(yamlfile, export_path)
     else:
@@ -200,7 +218,7 @@ def uninstall_yaml(
     marker: OutputMarker = OutputMarker("sbx_metadata.uninstall_yaml_export_marker"),
     install_marker: MarkerOptional = MarkerOptional("sbx_metadata.install_yaml_export_marker"),
     export_path: str = Config("sbx_metadata.yaml_export_path"),
-    host: Optional[str] = Config("sbx_metadata.yaml_export_host"),
+    host: str | None = Config("sbx_metadata.yaml_export_host"),
 ) -> None:
     """Uninstall YAML metadata.
 
@@ -214,11 +232,8 @@ def uninstall_yaml(
     Raises:
         SparvErrorMessage: If neither the host nor export path is set.
     """
-    if not host and not export_path:
-        raise SparvErrorMessage(
-            "Either 'sbx_metadata.yaml_export_host' or 'sbx_metadata.yaml_export_path' must be specified. YAML export "
-            "not uninstalled."
-        )
+    if not export_path:
+        raise SparvErrorMessage("'sbx_metadata.yaml_export_path' must be specified. YAML export not uninstalled.")
     remote_file_path = Path(export_path) / f"{corpus_id}.yaml"
 
     if host and host.startswith("git+"):

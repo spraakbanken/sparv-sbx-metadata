@@ -1,9 +1,8 @@
 """Metadata utilities."""
-from typing import Optional
 
 KORP_URL = "https://spraakbanken.gu.se/korp"
 MENINGSMANGDER_URL = "https://spraakbanken.gu.se/lb/resurser/meningsmangder"
-STATS_URL = "https://svn.spraakdata.gu.se/sb-arkiv/pub/frekvens"
+STATS_URL = "https://svn.spraakbanken.gu.se/sb-arkiv/pub/frekvens"
 
 STANDARD_LICENSE = "CC BY 4.0"
 
@@ -16,7 +15,7 @@ SBX_DEFAULT_CONTACT = {
 }
 
 
-def make_standard_xml_export(xml_export: str, corpus_id: str) -> Optional[dict]:
+def make_standard_xml_export(xml_export: str, corpus_id: str) -> dict | None:
     """Make license info object for standard XML export.
 
     Args:
@@ -37,7 +36,7 @@ def make_standard_xml_export(xml_export: str, corpus_id: str) -> Optional[dict]:
     return None
 
 
-def make_standard_stats_export(stats_export: bool, corpus_id: str) -> Optional[dict]:
+def make_standard_stats_export(stats_export: bool, corpus_id: str) -> dict | None:
     """Make license info object for standard token stats export.
 
     Args:
@@ -58,7 +57,7 @@ def make_standard_stats_export(stats_export: bool, corpus_id: str) -> Optional[d
     return None
 
 
-def make_korp(korp: bool, corpus_id: str, korp_modes: dict) -> Optional[dict]:
+def make_korp(korp: bool, corpus_id: str, korp_modes: list[dict]) -> dict | None:
     """Make license info object for standard Korp interface.
 
     Args:

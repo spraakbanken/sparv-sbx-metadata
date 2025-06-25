@@ -1,13 +1,18 @@
 """Metadata export (SBX specific)."""
 
 import re
-from typing import Union
 
 from sparv.api import Config, wizard
 
 from . import analysis_metadata_export, yaml_export
 
 __config__ = [
+    Config(
+        "sbx_metadata.api_url",
+        default="https://ws.spraakbanken.gu.se/ws/metadata/v3/",
+        description="URL to the metadata API",
+        datatype=str,
+    ),
     Config(
         "sbx_metadata.script",
         default="Latn",
@@ -31,7 +36,7 @@ __config__ = [
         "sbx_metadata.xml_export",
         default="scrambled",
         description="Whether XML export may be published. Values: scrambled, original, false",
-        datatype=Union[str, bool],
+        datatype=str | bool,
         choices=("scrambled", "original", "false", False),
     ),
     Config(
@@ -56,7 +61,7 @@ __config__ = [
         "sbx_metadata.contact_info",
         default="sbx-default",
         description="Object containing information about the contact person for the resource",
-        datatype=Union[str, dict],
+        datatype=str | dict,
     ),
     Config(
         "sbx_metadata.trainingdata",

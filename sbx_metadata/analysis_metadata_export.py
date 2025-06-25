@@ -1,20 +1,17 @@
 """Exporter for creating metadata files for analyses."""
 
 # ruff: noqa: PLC0415
-# ruff: noqa: FA100 # For Python 3.9 compatibility
 import re
+from collections import OrderedDict
+from json import JSONDecodeError
 from pathlib import Path
-from typing import Optional, get_type_hints
 
+import requests
 import yaml
 from sparv.api import Config, Export, Output, exporter, get_logger
 from sparv.api.util.misc import dump_yaml
 from sparv.core import registry
-
-try:
-    from sparv.core.paths import paths
-except ImportError:  # For compatibility with older versions of Sparv 5
-    from sparv.core import paths
+from sparv.core.paths import paths
 from sparv.core.snake_utils import make_param_dict
 
 from . import metadata_utils
@@ -29,6 +26,7 @@ METADATA_FILENAME = "metadata.yaml"
 def analysis_metadata_export(
     out: Export = Export("sbx_metadata/.dummy"),
     md_contact: dict = Config("sbx_metadata.contact_info"),
+    metadata_api: str = Config("sbx_metadata.api_url"),
 ) -> None:
     """Export metadata for Sparv analyses."""
     # Export dirs
@@ -37,7 +35,7 @@ def analysis_metadata_export(
 
     metadata_files, plugin_modules = find_metadata_files()
     written_counter = create_export_files(
-        export_dir_analysis, export_dir_utility, md_contact, metadata_files, plugin_modules
+        export_dir_analysis, export_dir_utility, md_contact, metadata_files, plugin_modules, metadata_api
     )
 
     # Create dummy output (since Sparv requires a known output)
@@ -49,6 +47,7 @@ def analysis_metadata_export(
 def plugin_analysis_metadata_export(
     out: Export = Export("sbx_metadata/.dummy_plugin"),
     md_contact: dict = Config("sbx_metadata.contact_info"),
+    metadata_api: str = Config("sbx_metadata.api_url"),
 ) -> None:
     """Export metadata for Sparv analyses (plugins only)."""
     # Export dirs
@@ -57,7 +56,13 @@ def plugin_analysis_metadata_export(
 
     metadata_files, plugin_modules = find_metadata_files()
     written_counter = create_export_files(
-        export_dir_analysis, export_dir_utility, md_contact, metadata_files, plugin_modules, plugins_only=True
+        export_dir_analysis,
+        export_dir_utility,
+        md_contact,
+        metadata_files,
+        plugin_modules,
+        metadata_api,
+        plugins_only=True,
     )
 
     # Create dummy output (since Sparv requires a known output)
@@ -71,6 +76,7 @@ def create_export_files(
     md_contact: dict,
     metadata_files: dict[str, Path],
     plugin_modules: set[str],
+    metadata_api: str,
     plugins_only: bool = False,
 ) -> int:
     """Create export files from metadata.
@@ -81,11 +87,27 @@ def create_export_files(
         md_contact: Default contact info to be used in metadata files.
         metadata_files: Dictionary with module names as keys and metadata file paths as values.
         plugin_modules: Set of plugin module names.
+        metadata_api: URL of the metadata API to look up existing DOIs.
         plugins_only: Flag to indicate if only plugin metadata should be exported.
 
     Returns:
         Number of written metadata files.
     """
+    if metadata_api:
+        # Look up existing DOIs using the metadata API
+        existing_dois = {}
+        for resource_type in ("analyses", "utilities"):
+            logger.info("Looking up existing DOIs for %s", resource_type)
+            try:
+                response = requests.get(f"{metadata_api}{resource_type}", timeout=10)
+                for resource in response.json()["resources"]:
+                    if resource.get("doi"):
+                        existing_dois[resource["id"]] = resource["doi"]
+            except requests.RequestException as e:
+                logger.warning("Failed to look up existing DOIs for %s: %s", resource_type, e)
+            except JSONDecodeError as e:
+                logger.warning("Failed to parse JSON response for %s: %s", resource_type, e)
+
     written_counter = 0
 
     for module_name, metadata_file in metadata_files.items():
@@ -175,6 +197,9 @@ def create_export_files(
             # Remove empty fields
             data = {k: v for k, v in data.items() if v}  # noqa: PLW2901
 
+            if "doi" not in data and analysis_id in existing_dois:
+                data["doi"] = existing_dois[analysis_id]
+
             export_dir.mkdir(exist_ok=True, parents=True)
             (export_dir / f"{analysis_id}.yaml").write_text(WARNING_MESSAGE + dump_yaml(data), encoding="utf-8")
             logger.debug("%s/%s.yaml written", export_dir, analysis_id)
@@ -212,8 +237,8 @@ def generate_analysis_example(
     annotation_info: dict,
     plugin_modules: set[str],
     module_name: str,
-    example_output: Optional[str],
-    example_extra: Optional[str],
+    example_output: str | None,
+    example_extra: str | None,
 ) -> None:
     """Update data dictionary with a generated example unless one is already manually set.
 
@@ -233,7 +258,8 @@ def generate_analysis_example(
         plugin_info = (
             f"You also need to install the following plugin: *{plugin_link}*.\n\n"
             "For general information on how to install plugins, see [here]"
-            "(https://spraakbanken.gu.se/sparv/#/user-manual/installation-and-setup?id=plugins).\n\n"
+            "(https://spraakbanken.gu.se/sparv/user-manual/installation-and-setup/#installing-and-uninstalling-plugins)"
+            ".\n\n"
         )
     # TODO: Add link to Mink if the analysis is available there (based on collection or something else)
     if not data.get("example"):
@@ -241,12 +267,12 @@ def generate_analysis_example(
         annotations_list = "\n".join(f"- {a}  # {annotation_info[a].description}" for a in annotations)
         data["example"] = (
             "This analysis is used with Sparv. Check out [Sparv's quick start guide]"
-            "(https://spraakbanken.gu.se/sparv/#/user-manual/quick-start) to get started!\n"
+            "(https://spraakbanken.gu.se/sparv/user-manual/quick-start/) to get started!\n"
             "\n"
             "To use this analysis, add the following "
             f"line{'s' if len(annotations) > 1 else ''} under `export.annotations` in the Sparv "
             "[corpus configuration file]"
-            "(https://spraakbanken.gu.se/sparv/#/user-manual/quick-start?id=creating-the-config-file):\n"
+            "(https://spraakbanken.gu.se/sparv/user-manual/quick-start/#creating-the-config-file):\n"
             "\n"
             "```yaml\n"
             f"{annotations_list}\n"
@@ -261,13 +287,13 @@ def generate_analysis_example(
         data["example"] += f"\nExample output:\n{example_output.strip()}"
 
 
-def generate_utility_example(data: dict, handler: str, handler_type: str, example_extra: Optional[str]) -> None:
+def generate_utility_example(data: dict, handler: str, handler_type: str, example_extra: str | None) -> None:
     """Update data dictionary with a generated example unless one is already manually set."""
     if not data.get("example"):
         example_extra = example_extra + "\n\n" if example_extra else ""
         data["example"] = (
             f"This {handler_type} is used with Sparv. Check out [Sparv's quick start guide]"
-            "(https://spraakbanken.gu.se/sparv/#/user-manual/quick-start) to get started!\n"
+            "(https://spraakbanken.gu.se/sparv/user-manual/quick-start/) to get started!\n"
             "\n"
             f"To use this {handler_type}, run Sparv with the argument '{handler}':\n\n"
             "```sh\n"
@@ -306,9 +332,9 @@ def find_metadata_files() -> tuple[dict[str, Path], set[str]]:
         module names
     """
     import importlib
+    import importlib.resources
     import pkgutil
-
-    from importlib_metadata import entry_points
+    from importlib.metadata import entry_points
 
     # Find all Sparv modules and installed plugins
     modules = pkgutil.iter_modules([str(paths.sparv_path / paths.modules_dir)])
@@ -367,9 +393,12 @@ def collect_known(module_name: str) -> dict:
     for f_name, f in registry.modules[module_name].functions.items():
         if f["type"] == registry.Annotator.annotator:
             # Convert type hints from strings to actual types (needed because of __future__.annotations)
-            # TODO: Use the eval_str parameter for inspect.signature instead, once we target Python 3.10
-            f["function"].__annotations__ = get_type_hints(f["function"])
-            params = make_param_dict(inspect.signature(f["function"]).parameters)
+            signature = inspect.signature(f["function"], eval_str=True)
+            f["function"].__annotations__ = {
+                **{param.name: param.annotation for param in signature.parameters.values()},
+                "return": signature.return_annotation,
+            }
+            params = make_param_dict(OrderedDict(inspect.signature(f["function"]).parameters))
             for param in params:
                 if params[param][1] is Output:
                     known["annotations"][params[param][0].name] = params[param][0]
