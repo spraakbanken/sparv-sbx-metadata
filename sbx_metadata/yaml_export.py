@@ -127,16 +127,21 @@ def yaml_export(
     else:
         md_obj["contact_info"] = md_contact
 
-    md_obj["annotation"] = md_annotation
-    md_obj["keywords"] = md_keywords
-    md_obj["caveats"] = md_caveats
-    md_obj["creators"] = md_creators
-    md_obj["standard_reference"] = md_standard_reference
-    md_obj["other_references"] = md_other_references
-    md_obj["intended_uses"] = md_intended_uses
+    # Add optional metadata fields if they are present
+    optional_fields = {
+        "annotation": md_annotation,
+        "keywords": md_keywords,
+        "caveats": md_caveats,
+        "creators": md_creators,
+        "standard_reference": md_standard_reference,
+        "other_references": md_other_references,
+        "intended_uses": md_intended_uses,
+        "doi": md_doi,
+    }
+    md_obj.update({key: value for key, value in optional_fields.items() if value})
+
     md_obj["created"] = md_created or datetime.now().strftime("%Y-%m-%d")  # Use today's date as default
     md_obj["updated"] = md_updated or datetime.now().strftime("%Y-%m-%d")  # Use today's date as default
-    md_obj["doi"] = md_doi
 
     # Set description
     if set_long_description and metadata.get("description"):
