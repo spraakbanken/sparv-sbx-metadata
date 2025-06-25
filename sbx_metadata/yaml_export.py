@@ -3,7 +3,6 @@
 import re
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
 
 from sparv.api import (
     AnnotationCommonData,
@@ -169,8 +168,8 @@ def install_yaml(
     yamlfile: ExportInput = ExportInput("sbx_metadata/[metadata.id].yaml"),
     marker: OutputMarker = OutputMarker("sbx_metadata.install_yaml_export_marker"),
     uninstall_marker: MarkerOptional = MarkerOptional("sbx_metadata.uninstall_yaml_export_marker"),
-    export_path: Optional[str] = Config("sbx_metadata.yaml_export_path"),
-    host: Optional[str] = Config("sbx_metadata.yaml_export_host"),
+    export_path: str = Config("sbx_metadata.yaml_export_path"),
+    host: str | None = Config("sbx_metadata.yaml_export_host"),
 ) -> None:
     """Copy YAML metadata to remote host or install to Git repository.
 
@@ -184,11 +183,8 @@ def install_yaml(
     Raises:
         SparvErrorMessage: If neither the host nor export path is set.
     """
-    if not host and not export_path:
-        raise SparvErrorMessage(
-            "Either 'sbx_metadata.yaml_export_host' or 'sbx_metadata.yaml_export_path' must be specified. YAML export"
-            "not installed."
-        )
+    if not export_path:
+        raise SparvErrorMessage("'sbx_metadata.yaml_export_path' must be specified. YAML export not installed.")
     if host and host.startswith("git+"):
         util.install.install_git(yamlfile, export_path)
     else:
@@ -205,7 +201,7 @@ def uninstall_yaml(
     marker: OutputMarker = OutputMarker("sbx_metadata.uninstall_yaml_export_marker"),
     install_marker: MarkerOptional = MarkerOptional("sbx_metadata.install_yaml_export_marker"),
     export_path: str = Config("sbx_metadata.yaml_export_path"),
-    host: Optional[str] = Config("sbx_metadata.yaml_export_host"),
+    host: str | None = Config("sbx_metadata.yaml_export_host"),
 ) -> None:
     """Uninstall YAML metadata.
 
@@ -219,11 +215,8 @@ def uninstall_yaml(
     Raises:
         SparvErrorMessage: If neither the host nor export path is set.
     """
-    if not host and not export_path:
-        raise SparvErrorMessage(
-            "Either 'sbx_metadata.yaml_export_host' or 'sbx_metadata.yaml_export_path' must be specified. YAML export "
-            "not uninstalled."
-        )
+    if not export_path:
+        raise SparvErrorMessage("'sbx_metadata.yaml_export_path' must be specified. YAML export not uninstalled.")
     remote_file_path = Path(export_path) / f"{corpus_id}.yaml"
 
     if host and host.startswith("git+"):

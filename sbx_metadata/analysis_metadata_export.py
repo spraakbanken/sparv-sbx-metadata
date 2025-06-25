@@ -1,20 +1,15 @@
 """Exporter for creating metadata files for analyses."""
 
 # ruff: noqa: PLC0415
-# ruff: noqa: FA100 # For Python 3.9 compatibility
 import re
+from collections import OrderedDict
 from pathlib import Path
-from typing import Optional, get_type_hints
 
 import yaml
 from sparv.api import Config, Export, Output, exporter, get_logger
 from sparv.api.util.misc import dump_yaml
 from sparv.core import registry
-
-try:
-    from sparv.core.paths import paths
-except ImportError:  # For compatibility with older versions of Sparv 5
-    from sparv.core import paths
+from sparv.core.paths import paths
 from sparv.core.snake_utils import make_param_dict
 
 from . import metadata_utils
@@ -212,8 +207,8 @@ def generate_analysis_example(
     annotation_info: dict,
     plugin_modules: set[str],
     module_name: str,
-    example_output: Optional[str],
-    example_extra: Optional[str],
+    example_output: str | None,
+    example_extra: str | None,
 ) -> None:
     """Update data dictionary with a generated example unless one is already manually set.
 
@@ -262,7 +257,7 @@ def generate_analysis_example(
         data["example"] += f"\nExample output:\n{example_output.strip()}"
 
 
-def generate_utility_example(data: dict, handler: str, handler_type: str, example_extra: Optional[str]) -> None:
+def generate_utility_example(data: dict, handler: str, handler_type: str, example_extra: str | None) -> None:
     """Update data dictionary with a generated example unless one is already manually set."""
     if not data.get("example"):
         example_extra = example_extra + "\n\n" if example_extra else ""
@@ -307,9 +302,9 @@ def find_metadata_files() -> tuple[dict[str, Path], set[str]]:
         module names
     """
     import importlib
+    import importlib.resources
     import pkgutil
-
-    from importlib_metadata import entry_points
+    from importlib.metadata import entry_points
 
     # Find all Sparv modules and installed plugins
     modules = pkgutil.iter_modules([str(paths.sparv_path / paths.modules_dir)])
@@ -368,9 +363,12 @@ def collect_known(module_name: str) -> dict:
     for f_name, f in registry.modules[module_name].functions.items():
         if f["type"] == registry.Annotator.annotator:
             # Convert type hints from strings to actual types (needed because of __future__.annotations)
-            # TODO: Use the eval_str parameter for inspect.signature instead, once we target Python 3.10
-            f["function"].__annotations__ = get_type_hints(f["function"])
-            params = make_param_dict(inspect.signature(f["function"]).parameters)
+            signature = inspect.signature(f["function"], eval_str=True)
+            f["function"].__annotations__ = {
+                **{param.name: param.annotation for param in signature.parameters.values()},
+                "return": signature.return_annotation,
+            }
+            params = make_param_dict(OrderedDict(inspect.signature(f["function"]).parameters))
             for param in params:
                 if params[param][1] is Output:
                     known["annotations"][params[param][0].name] = params[param][0]
