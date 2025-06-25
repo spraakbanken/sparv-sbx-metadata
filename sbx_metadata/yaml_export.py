@@ -2,8 +2,10 @@
 
 import re
 from datetime import datetime
+from json import JSONDecodeError
 from pathlib import Path
 
+import requests
 from sparv.api import (
     AnnotationCommonData,
     Config,
@@ -45,6 +47,7 @@ def yaml_export(
     tokens: AnnotationCommonData = AnnotationCommonData("misc.<token>_count"),
     # korp_protected: bool = Config("korp.protected"),
     korp_modes: list = Config("korp.modes"),
+    metadata_api: str = Config("sbx_metadata.api_url"),
     md_language: bool = Config("sbx_metadata.language"),
     md_trainingdata: bool = Config("sbx_metadata.trainingdata"),
     md_in_collections: list = Config("sbx_metadata.in_collections"),
@@ -138,6 +141,20 @@ def yaml_export(
         "doi": md_doi,
     }
     md_obj.update({key: value for key, value in optional_fields.items() if value})
+
+    # Look up existing DOI
+    if not md_doi and metadata_api:
+        try:
+            url = f"{metadata_api}?resource={corpus_id}"
+            logger.info("Looking up existing DOI from API: %s", url)
+            response = requests.get(url, timeout=10)
+            if existing_doi := response.json().get("doi"):
+                md_obj["doi"] = existing_doi
+                logger.info("Found existing DOI: %s", existing_doi)
+        except requests.RequestException as e:
+            logger.warning("Failed to fetch existing DOI from API: %s", e)
+        except JSONDecodeError as e:
+            logger.warning("Failed to decode JSON response from API: %s", e)
 
     md_obj["created"] = md_created or datetime.now().strftime("%Y-%m-%d")  # Use today's date as default
     md_obj["updated"] = md_updated or datetime.now().strftime("%Y-%m-%d")  # Use today's date as default

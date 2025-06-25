@@ -8,6 +8,12 @@ from . import analysis_metadata_export, yaml_export
 
 __config__ = [
     Config(
+        "sbx_metadata.api_url",
+        default="https://ws.spraakbanken.gu.se/ws/metadata/v3/",
+        description="URL to the metadata API",
+        datatype=str,
+    ),
+    Config(
         "sbx_metadata.script",
         default="Latn",
         description="Writing system used to represent the language of the corpus (ISO-15924)",

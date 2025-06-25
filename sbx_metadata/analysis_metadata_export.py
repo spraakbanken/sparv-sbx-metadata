@@ -3,8 +3,10 @@
 # ruff: noqa: PLC0415
 import re
 from collections import OrderedDict
+from json import JSONDecodeError
 from pathlib import Path
 
+import requests
 import yaml
 from sparv.api import Config, Export, Output, exporter, get_logger
 from sparv.api.util.misc import dump_yaml
@@ -24,6 +26,7 @@ METADATA_FILENAME = "metadata.yaml"
 def analysis_metadata_export(
     out: Export = Export("sbx_metadata/.dummy"),
     md_contact: dict = Config("sbx_metadata.contact_info"),
+    metadata_api: str = Config("sbx_metadata.api_url"),
 ) -> None:
     """Export metadata for Sparv analyses."""
     # Export dirs
@@ -32,7 +35,7 @@ def analysis_metadata_export(
 
     metadata_files, plugin_modules = find_metadata_files()
     written_counter = create_export_files(
-        export_dir_analysis, export_dir_utility, md_contact, metadata_files, plugin_modules
+        export_dir_analysis, export_dir_utility, md_contact, metadata_files, plugin_modules, metadata_api
     )
 
     # Create dummy output (since Sparv requires a known output)
@@ -44,6 +47,7 @@ def analysis_metadata_export(
 def plugin_analysis_metadata_export(
     out: Export = Export("sbx_metadata/.dummy_plugin"),
     md_contact: dict = Config("sbx_metadata.contact_info"),
+    metadata_api: str = Config("sbx_metadata.api_url"),
 ) -> None:
     """Export metadata for Sparv analyses (plugins only)."""
     # Export dirs
@@ -52,7 +56,13 @@ def plugin_analysis_metadata_export(
 
     metadata_files, plugin_modules = find_metadata_files()
     written_counter = create_export_files(
-        export_dir_analysis, export_dir_utility, md_contact, metadata_files, plugin_modules, plugins_only=True
+        export_dir_analysis,
+        export_dir_utility,
+        md_contact,
+        metadata_files,
+        plugin_modules,
+        metadata_api,
+        plugins_only=True,
     )
 
     # Create dummy output (since Sparv requires a known output)
@@ -66,6 +76,7 @@ def create_export_files(
     md_contact: dict,
     metadata_files: dict[str, Path],
     plugin_modules: set[str],
+    metadata_api: str,
     plugins_only: bool = False,
 ) -> int:
     """Create export files from metadata.
@@ -76,11 +87,27 @@ def create_export_files(
         md_contact: Default contact info to be used in metadata files.
         metadata_files: Dictionary with module names as keys and metadata file paths as values.
         plugin_modules: Set of plugin module names.
+        metadata_api: URL of the metadata API to look up existing DOIs.
         plugins_only: Flag to indicate if only plugin metadata should be exported.
 
     Returns:
         Number of written metadata files.
     """
+    if metadata_api:
+        # Look up existing DOIs using the metadata API
+        existing_dois = {}
+        for resource_type in ("analyses", "utilities"):
+            logger.info("Looking up existing DOIs for %s", resource_type)
+            try:
+                response = requests.get(f"{metadata_api}{resource_type}", timeout=10)
+                for resource in response.json()["resources"]:
+                    if resource.get("doi"):
+                        existing_dois[resource["id"]] = resource["doi"]
+            except requests.RequestException as e:
+                logger.warning("Failed to look up existing DOIs for %s: %s", resource_type, e)
+            except JSONDecodeError as e:
+                logger.warning("Failed to parse JSON response for %s: %s", resource_type, e)
+
     written_counter = 0
 
     for module_name, metadata_file in metadata_files.items():
@@ -169,6 +196,9 @@ def create_export_files(
 
             # Remove empty fields
             data = {k: v for k, v in data.items() if v}  # noqa: PLW2901
+
+            if "doi" not in data and analysis_id in existing_dois:
+                data["doi"] = existing_dois[analysis_id]
 
             export_dir.mkdir(exist_ok=True, parents=True)
             (export_dir / f"{analysis_id}.yaml").write_text(WARNING_MESSAGE + dump_yaml(data), encoding="utf-8")
