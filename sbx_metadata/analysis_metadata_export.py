@@ -169,20 +169,20 @@ def create_export_files(
                     data, annotations, annotation_info, plugin_modules, module_name, example_output, example_extra
                 )
 
-            elif data.get("type") == "utility" or data.get("sparv_handler"):
+            elif data.get("type") == "utility" or data.get("sparv_processor"):
                 data["type"] = "utility"
                 export_dir = export_dir_utility
-                handler = data.pop("sparv_handler", None)
+                processor = data.pop("sparv_processor", None)
 
-                if handler in known["importers"]:
-                    handler_type = "importer"
-                elif handler in known["exporters"]:
-                    handler_type = "exporter"
+                if processor in known["importers"]:
+                    processor_type = "importer"
+                elif processor in known["exporters"]:
+                    processor_type = "exporter"
                 else:
-                    logger.error("Unknown handler in '%s' for module '%s': '%s'", analysis_id, module_name, handler)
+                    logger.error("Unknown processor in '%s' for module '%s': '%s'", analysis_id, module_name, processor)
                     continue
 
-                generate_utility_example(data, handler, handler_type, example_extra)
+                generate_utility_example(data, processor, processor_type, plugin_modules, module_name, example_extra)
             else:
                 logger.error("Analysis metadata '%s' in module '%s' is of an unknown type.", analysis_id, module_name)
                 continue
@@ -287,20 +287,38 @@ def generate_analysis_example(
         data["example"] += f"\nExample output:\n{example_output.strip()}"
 
 
-def generate_utility_example(data: dict, handler: str, handler_type: str, example_extra: str | None) -> None:
+def generate_utility_example(
+    data: dict,
+    processor: str,
+    processor_type: str,
+    plugin_modules: set[str],
+    module_name: str,
+    example_extra: str | None,
+) -> None:
     """Update data dictionary with a generated example unless one is already manually set."""
+    plugin_info = ""
+    if module_name in plugin_modules:
+        plugin_url = data.pop("plugin_url", None)
+        plugin_link = f"[{module_name}]({plugin_url})" if plugin_url else module_name
+        plugin_info = (
+            f"You also need to install the following plugin: *{plugin_link}*.\n\n"
+            "For general information on how to install plugins, see [here]"
+            "(https://spraakbanken.gu.se/sparv/user-manual/installation-and-setup/#installing-and-uninstalling-plugins)"
+            ".\n\n"
+        )
     if not data.get("example"):
         example_extra = example_extra + "\n\n" if example_extra else ""
         data["example"] = (
-            f"This {handler_type} is used with Sparv. Check out [Sparv's quick start guide]"
+            f"This {processor_type} is used with Sparv. Check out [Sparv's quick start guide]"
             "(https://spraakbanken.gu.se/sparv/user-manual/quick-start/) to get started!\n"
             "\n"
-            f"To use this {handler_type}, run Sparv with the argument '{handler}':\n\n"
+            f"To use this {processor_type}, run Sparv with the argument '{processor}':\n\n"
             "```sh\n"
-            f"sparv run {handler}\n"
+            f"sparv run {processor}\n"
             "```\n"
             "\n"
             f"{example_extra}"
+            f"{plugin_info}"
             "For more info on how to use Sparv, check out the [Sparv documentation]"
             "(https://spraakbanken.gu.se/sparv).\n"
         )
