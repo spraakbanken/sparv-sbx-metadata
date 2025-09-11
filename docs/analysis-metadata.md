@@ -21,6 +21,7 @@ sparv-sbx-uppercase/
 ```
 
 > [!NOTE]
+>
 > To avoid confusion, we will refer to the metadata files included in Sparv plugins as "Sparv metadata files," and the
 > resulting metadata files (used for rendering the analysis section on the website) as "SBX metadata files."
 
@@ -30,9 +31,10 @@ analyses](https://raw.githubusercontent.com/spraakbanken/metadata/refs/heads/mai
 is a description of the fields that are specific to analyses.
 
 > [!NOTE]
+>
 > While this document mainly mention *analyses*, most of what is written here also applies to *utilities*. Utilities are
-> basically analyses that don't produce annotations, like different export formats. Utilities also show up on the
-> analyses page.
+> basically analyses that don't produce annotations, like different import or export formats. Utilities also show up on
+> the analyses page.
 
 ## Metadata Fields Specific for Analyses and Utilities
 
@@ -184,8 +186,8 @@ This will generate SBX metadata files and place them in the `export/sbx_metadata
 generated for *all* installed plugins, not just your plugin.
 
 Next, add the relevant generated metadata files to [Språkbanken Text's metadata
-repository](https://github.com/spraakbanken/metadata/tree/main/yaml/analysis) in the `yaml/analysis` directory. This
-step must be done manually but can be easily accomplished directly in the GitHub web interface. Use the "Add file"
+repository](https://github.com/spraakbanken/metadata/tree/main/yaml) in the `yaml/analysis` or `yaml/utility` directory.
+This step must be done manually but can be easily accomplished directly in the GitHub web interface. Use the "Add file"
 button (ensure you are in the correct directory).
 
 Once the SBX metadata files are added to the repository, your analyses should appear on the analyses page within a few
