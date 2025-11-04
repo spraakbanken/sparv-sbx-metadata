@@ -388,6 +388,8 @@ def find_metadata_files() -> tuple[dict[str, Path], set[str]]:
                 # Import Sparv plugin
                 module = entry_point.load()
                 registry.add_module_to_registry(module, entry_point.name, skip_language_check=True)
+            else:
+                logger.warning("No metadata file found for plugin '%s'", entry_point.name)
 
     return metadata_files, plugin_modules
 
