@@ -170,9 +170,10 @@ example of how to use the `parent` field.
 
 ## Generating the SBX Metadata File
 
-Once your Sparv metadata file is ready, you can generate the SBX metadata file. To do this, in addition to having your
-plugin installed, you need to install the `sparv-sbx-metadata` plugin, available on
-[GitHub](https://github.com/spraakbanken/sparv-sbx-metadata).
+Once your Sparv metadata file is ready, you can generate the SBX metadata file. To do this, you first need to make sure
+that your plugin is installed in *editable mode* (using the `-e` flag during installation) for Sparv to have access to
+the `metadata.yaml` file. Otherwise, no SBX metadata file will be generated. Then, install the `sparv-sbx-metadata`
+plugin, available on [GitHub](https://github.com/spraakbanken/sparv-sbx-metadata).
 
 Next, navigate to any directory containing a `config.yaml` file (e.g., a [corpus
 directory](https://spraakbanken.gu.se/sparv/user-manual/preparing-your-corpus/#the-corpus-directory)) in the terminal,
