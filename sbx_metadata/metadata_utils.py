@@ -1,7 +1,7 @@
 """Metadata utilities."""
 
 KORP_URL = "https://spraakbanken.gu.se/korp"
-MENINGSMANGDER_URL = "https://spraakbanken.gu.se/lb/resurser/meningsmangder"
+MENINGSMANGDER_URL = "https://spraakbanken.gu.se/resurser/meningsmangder"
 STATS_URL = "https://svn.spraakbanken.gu.se/sb-arkiv/pub/frekvens"
 
 STANDARD_LICENSE = "CC BY 4.0"
