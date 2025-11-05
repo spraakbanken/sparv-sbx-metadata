@@ -14,6 +14,12 @@ __config__ = [
         datatype=str,
     ),
     Config(
+        "sbx_metadata.mink_collection_id",
+        default="sbx-swe-mink_analyses",
+        description="ID of the Mink analyses collection",
+        datatype=str,
+    ),
+    Config(
         "sbx_metadata.script",
         default="Latn",
         description="Writing system used to represent the language of the corpus (ISO-15924)",

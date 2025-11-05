@@ -1,6 +1,7 @@
 """Metadata utilities."""
 
 KORP_URL = "https://spraakbanken.gu.se/korp"
+MINK_URL = "https://spraakbanken.gu.se/mink"
 MENINGSMANGDER_URL = "https://spraakbanken.gu.se/resurser/meningsmangder"
 STATS_URL = "https://svn.spraakbanken.gu.se/sb-arkiv/pub/frekvens"
 
