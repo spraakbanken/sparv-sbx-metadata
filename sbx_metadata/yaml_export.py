@@ -112,10 +112,11 @@ def yaml_export(
     md_obj["in_collections"] = md_in_collections
 
     scrambled = check_scrambled(installations, md_xml_export)
+    scramble_on = scramble_on.removeprefix("<").removesuffix(">") if scrambled and scramble_on else None
 
     # Set downloads
     downloads = [
-        metadata_utils.make_standard_xml_export(corpus_id, scrambled),
+        metadata_utils.make_standard_xml_export(corpus_id, scrambled, scramble_on),
         metadata_utils.make_standard_stats_export(corpus_id, md_stats_export, installations),
         *md_downloads,
     ]
@@ -123,7 +124,7 @@ def yaml_export(
 
     # Set interfaces
     interfaces = []
-    interfaces.append(metadata_utils.make_korp(md_korp, corpus_id, korp_modes))
+    interfaces.append(metadata_utils.make_korp(md_korp, corpus_id, korp_modes, scrambled, scramble_on))
     interfaces.extend(md_interfaces)
     md_obj["interfaces"] = [d for d in interfaces if d]
 

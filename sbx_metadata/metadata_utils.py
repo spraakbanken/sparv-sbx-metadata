@@ -1,5 +1,7 @@
 """Metadata utilities."""
 
+from typing import Any
+
 from sparv.api import get_logger
 
 KORP_URL = "https://spraakbanken.gu.se/korp"
@@ -20,25 +22,30 @@ SBX_DEFAULT_CONTACT = {
 logger = get_logger(__name__)
 
 
-def make_standard_xml_export(corpus_id: str, scrambled: bool | None) -> dict | None:
+def make_standard_xml_export(corpus_id: str, scrambled: bool | None, scramble_on: str | None) -> dict | None:
     """Make license info object for standard XML export.
 
     Args:
         corpus_id: Corpus ID.
         scrambled: Whether the corpus is scrambled.
+        scramble_on: What level the corpus is scrambled on.
 
     Returns:
         License info object or None.
     """
     if scrambled is None:
         return None
-    return {
+    result = {
         "url": f"{MENINGSMANGDER_URL}/{corpus_id}.xml.bz2",
         "type": "corpus",
         "format": "XML",
-        "description": "this file contains a scrambled version of the corpus" if scrambled else "",
+        "scrambled": scrambled,
+        "description": "",
         "license": STANDARD_LICENSE,
     }
+    if scramble_on:
+        result["scramble_level"] = scramble_on
+    return result
 
 
 def make_standard_stats_export(corpus_id: str, stats_export: bool | None, installations: list | None) -> dict | None:
@@ -74,19 +81,28 @@ def make_standard_stats_export(corpus_id: str, stats_export: bool | None, instal
     return None
 
 
-def make_korp(korp: bool, corpus_id: str, korp_modes: list[dict]) -> dict | None:
+def make_korp(
+    korp: bool, corpus_id: str, korp_modes: list[dict], scrambled: bool | None, scramble_on: str | None
+) -> dict[str, Any] | None:
     """Make license info object for standard Korp interface.
 
     Args:
         korp: Whether the corpus is available in Korp.
         corpus_id: Corpus ID.
         korp_modes: The Korp modes where the corpus is available.
+        scrambled: Whether the corpus is scrambled.
+        scramble_on: What level the corpus is scrambled on.
 
     Returns:
         License info object or None.
     """
     if korp:
-        item = {"license": STANDARD_LICENSE}
+        item: dict[str, Any] = {"license": STANDARD_LICENSE}
+        if scrambled is not None:
+            item["scrambled"] = scrambled
+        if scramble_on:
+            item["scramble_level"] = scramble_on
+        # Use default mode if available, otherwise first mode
         for mode in korp_modes:
             if mode.get("name") == "default":
                 item["url"] = f"{KORP_URL}/#?corpus={corpus_id}"
