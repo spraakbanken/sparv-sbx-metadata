@@ -40,14 +40,12 @@ __config__ = [
     # ),
     Config(
         "sbx_metadata.xml_export",
-        default="scrambled",
         description="Whether XML export may be published. Values: scrambled, original, false",
         datatype=str | bool,
         choices=("scrambled", "original", "false", False),
     ),
     Config(
         "sbx_metadata.stats_export",
-        default=True,
         description="Whether token frequency export may be published",
         datatype=bool,
     ),
