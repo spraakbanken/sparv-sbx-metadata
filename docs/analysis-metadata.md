@@ -75,7 +75,9 @@ here in more detail.
 - **trained_on**: (Optional) Training data used.
 - **tagset**: (Optional) Tagset used by the analysis.
 - **evaluation_results**: (Optional) Evaluation results.
-- **license**: (Optional) License for the code (e.g., license for the Sparv plugin). Defaults to 'MIT License' if left out.
+- **license**: (Optional) License for the code (e.g., license for the Sparv plugin). Needs to be a valid SPDX license
+  identifier. Use 'LicenseRef-Other' if the license is not in the SPDX list, and provide further information in the
+  `license_other` field.
 
 ## Fields Only Used in Sparv
 

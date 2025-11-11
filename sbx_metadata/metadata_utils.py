@@ -9,9 +9,9 @@ MINK_URL = "https://spraakbanken.gu.se/mink"
 MENINGSMANGDER_URL = "https://spraakbanken.gu.se/resurser/meningsmangder"
 STATS_URL = "https://svn.spraakbanken.gu.se/sb-arkiv/pub/frekvens"
 
-STANDARD_LICENSE = "CC BY 4.0"
+STANDARD_LICENSE = "CC-BY-4.0"
 
-DEFAULT_CODE_LICENSE = "MIT License"
+DEFAULT_CODE_LICENSE = "MIT"
 
 SBX_DEFAULT_CONTACT = {
     "name": "Markus Forsberg",
