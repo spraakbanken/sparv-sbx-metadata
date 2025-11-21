@@ -14,6 +14,12 @@ __config__ = [
         datatype=str,
     ),
     Config(
+        "sbx_metadata.mink_collection_id",
+        default="sbx-swe-mink_analyses",
+        description="ID of the Mink analyses collection",
+        datatype=str,
+    ),
+    Config(
         "sbx_metadata.script",
         default="Latn",
         description="Writing system used to represent the language of the corpus (ISO-15924)",
@@ -34,14 +40,12 @@ __config__ = [
     # ),
     Config(
         "sbx_metadata.xml_export",
-        default="scrambled",
         description="Whether XML export may be published. Values: scrambled, original, false",
         datatype=str | bool,
         choices=("scrambled", "original", "false", False),
     ),
     Config(
         "sbx_metadata.stats_export",
-        default=True,
         description="Whether token frequency export may be published",
         datatype=bool,
     ),

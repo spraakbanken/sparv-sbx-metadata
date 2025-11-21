@@ -45,6 +45,8 @@ def yaml_export(
     metadata: dict = Config("metadata"),
     sentences: AnnotationCommonData = AnnotationCommonData("misc.<sentence>_count"),
     tokens: AnnotationCommonData = AnnotationCommonData("misc.<token>_count"),
+    installations: list | None = Config("install"),
+    scramble_on: str | None = Config("xml_export.scramble_on"),
     # korp_protected: bool = Config("korp.protected"),
     korp_modes: list = Config("korp.modes"),
     metadata_api: str = Config("sbx_metadata.api_url"),
@@ -59,8 +61,8 @@ def yaml_export(
     md_standard_reference: str = Config("sbx_metadata.standard_reference"),
     md_other_references: list = Config("sbx_metadata.other_references"),
     md_intended_uses: dict = Config("sbx_metadata.intended_uses"),
-    md_xml_export: str = Config("sbx_metadata.xml_export"),
-    md_stats_export: bool = Config("sbx_metadata.stats_export"),
+    md_xml_export: str | None = Config("sbx_metadata.xml_export"),
+    md_stats_export: bool | None = Config("sbx_metadata.stats_export"),
     md_korp: bool = Config("sbx_metadata.korp"),
     md_downloads: list = Config("sbx_metadata.downloads"),
     md_interfaces: list = Config("sbx_metadata.interfaces"),
@@ -109,17 +111,20 @@ def yaml_export(
 
     md_obj["in_collections"] = md_in_collections
 
+    scrambled = check_scrambled(installations, md_xml_export)
+    scramble_on = scramble_on.removeprefix("<").removesuffix(">") if scrambled and scramble_on else None
+
     # Set downloads
     downloads = [
-        metadata_utils.make_standard_xml_export(md_xml_export, corpus_id),
-        metadata_utils.make_standard_stats_export(md_stats_export, corpus_id),
+        metadata_utils.make_standard_xml_export(corpus_id, scrambled, scramble_on),
+        metadata_utils.make_standard_stats_export(corpus_id, md_stats_export, installations),
         *md_downloads,
     ]
     md_obj["downloads"] = [d for d in downloads if d]
 
     # Set interfaces
     interfaces = []
-    interfaces.append(metadata_utils.make_korp(md_korp, corpus_id, korp_modes))
+    interfaces.append(metadata_utils.make_korp(md_korp, corpus_id, korp_modes, scrambled, scramble_on))
     interfaces.extend(md_interfaces)
     md_obj["interfaces"] = [d for d in interfaces if d]
 
@@ -179,8 +184,11 @@ def yaml_export(
     logger.info("Exported: %s", out)
 
 
-@installer("Copy YAML metadata to remote host or commit to local Git repository",
-           uninstaller="sbx_metadata:uninstall_yaml", priority=-1)
+@installer(
+    "Copy YAML metadata to remote host or commit to local Git repository",
+    uninstaller="sbx_metadata:uninstall_yaml",
+    priority=-1,
+)
 def install_yaml(
     yamlfile: ExportInput = ExportInput("sbx_metadata/[metadata.id].yaml"),
     marker: OutputMarker = OutputMarker("sbx_metadata.install_yaml_export_marker"),
@@ -242,3 +250,41 @@ def uninstall_yaml(
         util.install.uninstall_path(remote_file_path, host)
     install_marker.remove()
     marker.write()
+
+
+def check_scrambled(
+    installation_list: list[str] | None, xml_export: str | bool | None
+) -> bool | None:
+    """Determine if a corpus is scrambled based on its configuration.
+
+    Args:
+        installation_list: List of selected installations.
+        xml_export: sbx_metadata.xml_export configuration
+
+    Returns:
+        True if the corpus is scrambled, False if not, None if it can't be determined.
+    """
+    scrambled = None
+
+    # Explicit sbx_metadata.xml_export setting takes precedence, but warn if inconsistent settings are found
+    if xml_export == "original":
+        scrambled = False
+        if installation_list and "sbx_public_xml_export:install_scrambled" in installation_list:
+            logger.warning(
+                "'sbx_metadata.xml_export' is set to 'original' but the public installation is scrambled. "
+                "Please check your configuration."
+            )
+    elif xml_export == "scrambled":
+        scrambled = True
+        if installation_list and "sbx_public_xml_export:install" in installation_list:
+            logger.warning(
+                "'sbx_metadata.xml_export' is set to 'scrambled' but the public installation is not scrambled. "
+                "Please check your configuration."
+            )
+    elif installation_list:
+        if "sbx_public_xml_export:install" in installation_list:
+            scrambled = False
+        elif "sbx_public_xml_export:install_scrambled" in installation_list:
+            scrambled = True
+
+    return scrambled

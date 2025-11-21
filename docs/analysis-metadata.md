@@ -75,7 +75,9 @@ here in more detail.
 - **trained_on**: (Optional) Training data used.
 - **tagset**: (Optional) Tagset used by the analysis.
 - **evaluation_results**: (Optional) Evaluation results.
-- **license**: (Optional) License for the code (e.g., license for the Sparv plugin). Defaults to 'MIT License' if left out.
+- **license**: (Optional) License for the code (e.g., license for the Sparv plugin). Needs to be a valid [SPDX license
+  identifier](https://spdx.org/licenses/). Use 'LicenseRef-Other' if the license is not in the SPDX list, and provide
+  further information in the `license_other` field.
 
 ## Fields Only Used in Sparv
 
@@ -163,7 +165,6 @@ example of how to use the `parent` field.
 - The `name` field is not used for analyses and can be left out. Instead, the `id` field is used as the name of the
   analysis.
 - You can leave out the `type` field if the type is `analysis`, as this will be set by default.
-- If `license` is not specified, Sparv will set it to `MIT License`.
 - If `contact_info` is not specified, Sparv will set it to the default SBX contact info.
 - If the annotations produced are on one of the levels `token`, `sentence`, `paragraph`, or `text`, the `analysis_unit`
   field will be set automatically by Sparv.

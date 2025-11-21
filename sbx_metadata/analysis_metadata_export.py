@@ -27,6 +27,7 @@ def analysis_metadata_export(
     out: Export = Export("sbx_metadata/.dummy"),
     md_contact: dict = Config("sbx_metadata.contact_info"),
     metadata_api: str = Config("sbx_metadata.api_url"),
+    mink_collection_id: str = Config("sbx_metadata.mink_collection_id"),
 ) -> None:
     """Export metadata for Sparv analyses."""
     # Export dirs
@@ -35,7 +36,13 @@ def analysis_metadata_export(
 
     metadata_files, plugin_modules = find_metadata_files()
     written_counter = create_export_files(
-        export_dir_analysis, export_dir_utility, md_contact, metadata_files, plugin_modules, metadata_api
+        export_dir_analysis,
+        export_dir_utility,
+        md_contact,
+        metadata_files,
+        plugin_modules,
+        metadata_api,
+        mink_collection_id=mink_collection_id,
     )
 
     # Create dummy output (since Sparv requires a known output)
@@ -77,6 +84,7 @@ def create_export_files(
     metadata_files: dict[str, Path],
     plugin_modules: set[str],
     metadata_api: str,
+    mink_collection_id: str = "",
     plugins_only: bool = False,
 ) -> int:
     """Create export files from metadata.
@@ -107,6 +115,16 @@ def create_export_files(
                 logger.warning("Failed to look up existing DOIs for %s: %s", resource_type, e)
             except JSONDecodeError as e:
                 logger.warning("Failed to parse JSON response for %s: %s", resource_type, e)
+
+        # Get list of mink analyses
+        mink_analyses = []
+        try:
+            response = requests.get(f"{metadata_api}?resource={mink_collection_id}", timeout=10)
+            mink_analyses = [resource for resource in response.json()["resources"]]
+        except requests.RequestException as e:
+            logger.warning("Failed to look up Mink analyses: %s", e)
+        except JSONDecodeError as e:
+            logger.warning("Failed to parse JSON response for Mink analyses: %s", e)
 
     written_counter = 0
 
@@ -168,6 +186,12 @@ def create_export_files(
                 generate_analysis_example(
                     data, annotations, annotation_info, plugin_modules, module_name, example_output, example_extra
                 )
+
+                # Update data dictionary with 'interfaces' if the analysis is part of the mink analyses collection
+                if analysis_id in mink_analyses:
+                    data.setdefault("interfaces", []).append(
+                        {"url": metadata_utils.MINK_URL, "license": metadata_utils.STANDARD_LICENSE}
+                    )
 
             elif data.get("type") == "utility" or data.get("sparv_processor"):
                 data["type"] = "utility"
@@ -388,6 +412,8 @@ def find_metadata_files() -> tuple[dict[str, Path], set[str]]:
                 # Import Sparv plugin
                 module = entry_point.load()
                 registry.add_module_to_registry(module, entry_point.name, skip_language_check=True)
+            else:
+                logger.warning("No metadata file found for plugin '%s'", entry_point.name)
 
     return metadata_files, plugin_modules
 
