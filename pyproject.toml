@@ -1,6 +1,6 @@
 [project]
 name = "sparv-sbx-metadata"
-version = "2.3.1"
+version = "2.4.0"
 description = "Sparv plugin for SBX specific export of metadata"
 readme = "README.md"
 license = "MIT"
