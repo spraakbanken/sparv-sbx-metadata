@@ -116,7 +116,7 @@ def yaml_export(
 
     # Set downloads
     downloads = [
-        metadata_utils.make_standard_xml_export(corpus_id, scrambled, scramble_on),
+        metadata_utils.make_standard_xml_export(corpus_id, scrambled, scramble_on, md_xml_export),
         metadata_utils.make_standard_stats_export(corpus_id, md_stats_export, installations),
         *md_downloads,
     ]
@@ -253,13 +253,13 @@ def uninstall_yaml(
 
 
 def check_scrambled(
-    installation_list: list[str] | None, xml_export: str | bool | None
+    installation_list: list[str] | None, xml_export: str | None
 ) -> bool | None:
     """Determine if a corpus is scrambled based on its configuration.
 
     Args:
         installation_list: List of selected installations.
-        xml_export: sbx_metadata.xml_export configuration
+        xml_export: sbx_metadata.xml_export configuration.
 
     Returns:
         True if the corpus is scrambled, False if not, None if it can't be determined.
@@ -279,6 +279,16 @@ def check_scrambled(
         if installation_list and "sbx_public_xml_export:install" in installation_list:
             logger.warning(
                 "'sbx_metadata.xml_export' is set to 'scrambled' but the public installation is not scrambled. "
+                "Please check your configuration."
+            )
+    elif xml_export == "disabled":
+        scrambled = None
+        if installation_list and (
+            "sbx_public_xml_export:install" in installation_list
+            or "sbx_public_xml_export:install_scrambled" in installation_list
+        ):
+            logger.warning(
+                "'sbx_metadata.xml_export' is set to 'disabled' but a public installation is selected. "
                 "Please check your configuration."
             )
     elif installation_list:

@@ -40,9 +40,9 @@ __config__ = [
     # ),
     Config(
         "sbx_metadata.xml_export",
-        description="Whether XML export may be published. Values: scrambled, original, false",
-        datatype=str | bool,
-        choices=("scrambled", "original", "false", False),
+        description="Whether XML export may be published. Values: scrambled, original, disabled",
+        datatype=str,
+        choices=("scrambled", "original", "disabled"),
     ),
     Config(
         "sbx_metadata.stats_export",
@@ -191,7 +191,7 @@ def setup_wizard(corpus_config: dict) -> list[dict]:
             "choices": [
                 {"value": "scrambled", "name": "Yes, but the corpus will be scrambled"},
                 {"value": "original", "name": "Yes, in its original order"},
-                {"value": False, "name": "No"},
+                {"value": "disabled", "name": "No"},
             ],
             "default": {"value": "scrambled", "name": "Yes, but the corpus will be scrambled"},
         },

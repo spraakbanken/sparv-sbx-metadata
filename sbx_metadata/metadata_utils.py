@@ -22,18 +22,21 @@ SBX_DEFAULT_CONTACT = {
 logger = get_logger(__name__)
 
 
-def make_standard_xml_export(corpus_id: str, scrambled: bool | None, scramble_on: str | None) -> dict | None:
+def make_standard_xml_export(
+    corpus_id: str, scrambled: bool | None, scramble_on: str | None, xml_export: str | None
+) -> dict | None:
     """Make license info object for standard XML export.
 
     Args:
         corpus_id: Corpus ID.
         scrambled: Whether the corpus is scrambled.
         scramble_on: What level the corpus is scrambled on.
+        xml_export: XML export setting.
 
     Returns:
         License info object or None.
     """
-    if scrambled is None:
+    if scrambled is None or xml_export == "disabled":
         return None
     result = {
         "url": f"{MENINGSMANGDER_URL}/{corpus_id}.xml.bz2",
