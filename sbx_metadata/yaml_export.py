@@ -124,7 +124,7 @@ def yaml_export(
 
     # Set interfaces
     interfaces = []
-    interfaces.append(metadata_utils.make_korp(md_korp, corpus_id, korp_modes, scrambled, scramble_on))
+    interfaces.append(metadata_utils.make_korp(md_korp, corpus_id, korp_modes, scrambled, scramble_on, installations))
     interfaces.extend(md_interfaces)
     md_obj["interfaces"] = [d for d in interfaces if d]
 

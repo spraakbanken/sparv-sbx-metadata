@@ -91,7 +91,12 @@ def make_standard_stats_export(corpus_id: str, stats_export: bool | None, instal
 
 
 def make_korp(
-    korp: bool, corpus_id: str, korp_modes: list[dict], scrambled: bool | None, scramble_on: str | None
+    korp: bool,
+    corpus_id: str,
+    korp_modes: list[dict],
+    scrambled: bool | None,
+    scramble_on: str | None,
+    installations: list | None,
 ) -> dict[str, Any] | None:
     """Make license info object for standard Korp interface.
 
@@ -105,7 +110,21 @@ def make_korp(
     Returns:
         License info object or None.
     """
-    if korp:
+    # Warn about inconsistent configuration
+    korp_installation = installations and any(i.startswith("korp:") for i in installations)
+    if korp and not korp_installation:
+        logger.warning(
+            "'sbx_metadata.korp' is enabled but no Korp installation is selected. Please check your configuration."
+        )
+    elif korp is False and korp_installation:
+        logger.warning(
+            "A Korp installation is selected but 'sbx_metadata.korp' is disabled. Please check your configuration."
+        )
+
+    if korp is False:
+        return None
+
+    if korp or korp_installation:
         item: dict[str, Any] = {"license": STANDARD_LICENSE}
         if scrambled is not None:
             item["scrambled"] = scrambled

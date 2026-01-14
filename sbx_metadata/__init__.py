@@ -50,7 +50,7 @@ __config__ = [
         datatype=bool,
     ),
     Config(
-        "sbx_metadata.korp", default=True, datatype=bool, description="Whether the corpus will be published in Korp"
+        "sbx_metadata.korp", datatype=bool, description="Whether the corpus will be published in Korp"
     ),
     Config(
         "sbx_metadata.downloads", default=[], datatype=list, description="Downloadable files belonging to the corpus"
