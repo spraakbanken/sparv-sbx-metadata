@@ -62,6 +62,7 @@ def make_standard_stats_export(corpus_id: str, stats_export: bool | None, instal
     Returns:
         License info object or None.
     """
+    # Warn about inconsistent configuration
     stats_installation = installations and any(i.startswith("stats_export:") for i in installations)
     if stats_export and not stats_installation:
         logger.warning(
@@ -73,6 +74,11 @@ def make_standard_stats_export(corpus_id: str, stats_export: bool | None, instal
             "A stats export installation is selected but 'sbx_metadata.stats_export' is disabled. "
             "Please check your configuration."
         )
+
+    # stats_export setting takes precedence
+    if stats_export is False:
+        return None
+
     if stats_export or stats_installation:
         return {
             "url": f"{STATS_URL}/stats_{corpus_id}.csv.zip",
