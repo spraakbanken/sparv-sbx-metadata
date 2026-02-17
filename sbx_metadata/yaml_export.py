@@ -50,6 +50,7 @@ def yaml_export(
     # korp_protected: bool = Config("korp.protected"),
     korp_modes: list = Config("korp.modes"),
     metadata_api: str = Config("sbx_metadata.api_url"),
+    md_name: dict | None = Config("sbx_metadata.name"),
     md_language: bool = Config("sbx_metadata.language"),
     md_trainingdata: bool = Config("sbx_metadata.trainingdata"),
     md_in_collections: list = Config("sbx_metadata.in_collections"),
@@ -72,7 +73,7 @@ def yaml_export(
     md_doi: str = Config("sbx_metadata.doi"),
 ) -> None:
     """Export corpus metadata to YAML format."""
-    md_obj = {"name": metadata.get("name", {})}
+    md_obj = {"name": md_name or metadata.get("name", {})}
 
     # Set short description
     set_long_description = True

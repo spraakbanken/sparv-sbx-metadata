@@ -26,6 +26,11 @@ __config__ = [
         datatype=str,
     ),
     Config(
+        "sbx_metadata.name",
+        description="Optional name to use instead of `metadata.name`",
+        datatype=dict[str, str],
+    ),
+    Config(
         "sbx_metadata.language",
         default="",
         description="Language of source files (ISO 639-3). Use this to override metadata.language, for "
