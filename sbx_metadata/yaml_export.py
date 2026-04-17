@@ -64,7 +64,7 @@ def yaml_export(
     md_intended_uses: dict = Config("sbx_metadata.intended_uses"),
     md_xml_export: str | None = Config("sbx_metadata.xml_export"),
     md_stats_export: bool | None = Config("sbx_metadata.stats_export"),
-    md_korp: bool = Config("sbx_metadata.korp"),
+    md_korp: bool | None = Config("sbx_metadata.korp"),
     md_downloads: list = Config("sbx_metadata.downloads"),
     md_interfaces: list = Config("sbx_metadata.interfaces"),
     md_contact: dict = Config("sbx_metadata.contact_info"),
