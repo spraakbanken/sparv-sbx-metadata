@@ -91,7 +91,7 @@ def make_standard_stats_export(corpus_id: str, stats_export: bool | None, instal
 
 
 def make_korp(
-    korp: bool,
+    korp: bool | None,
     corpus_id: str,
     korp_modes: list[dict],
     scrambled: bool | None,
@@ -101,11 +101,13 @@ def make_korp(
     """Make license info object for standard Korp interface.
 
     Args:
-        korp: Whether the corpus is available in Korp.
+        korp: Whether the corpus is available in Korp. If `None`, the availability is determined based on the selected
+            installations.
         corpus_id: Corpus ID.
         korp_modes: The Korp modes where the corpus is available.
         scrambled: Whether the corpus is scrambled.
         scramble_on: What level the corpus is scrambled on.
+        installations: List of selected installations.
 
     Returns:
         License info object or None.

@@ -96,14 +96,16 @@ def create_export_files(
         metadata_files: Dictionary with module names as keys and metadata file paths as values.
         plugin_modules: Set of plugin module names.
         metadata_api: URL of the metadata API to look up existing DOIs.
+        mink_collection_id: ID of the Mink collection to check for analyses that should be linked to Mink.
         plugins_only: Flag to indicate if only plugin metadata should be exported.
 
     Returns:
         Number of written metadata files.
     """
+    mink_analyses = []
+    existing_dois = {}
     if metadata_api:
         # Look up existing DOIs using the metadata API
-        existing_dois = {}
         for resource_type in ("analyses", "utilities"):
             logger.info("Looking up existing DOIs for %s", resource_type)
             try:
@@ -117,10 +119,9 @@ def create_export_files(
                 logger.warning("Failed to parse JSON response for %s: %s", resource_type, e)
 
         # Get list of mink analyses
-        mink_analyses = []
         try:
             response = requests.get(f"{metadata_api}?resource={mink_collection_id}", timeout=10)
-            mink_analyses = [resource for resource in response.json()["resources"]]
+            mink_analyses = list(response.json()["resources"])
         except requests.RequestException as e:
             logger.warning("Failed to look up Mink analyses: %s", e)
         except JSONDecodeError as e:
@@ -371,7 +372,7 @@ def find_metadata_files() -> tuple[dict[str, Path], set[str]]:
 
     Returns:
         A tuple with a dictionary of module names as keys and metadata file paths as values, and a set of plugin
-        module names
+            module names
     """
     import importlib
     import importlib.resources
