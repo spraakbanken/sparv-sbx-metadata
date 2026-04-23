@@ -12,7 +12,7 @@ from sparv.api import Config, Export, Output, exporter, get_logger
 from sparv.api.util.misc import dump_yaml
 from sparv.core import registry
 from sparv.core.paths import paths
-from sparv.core.snake_utils import make_param_dict
+from sparv.core.pipeline import build_param_info
 
 from . import metadata_utils
 from .yaml_export import WARNING_MESSAGE
@@ -443,7 +443,7 @@ def collect_known(module_name: str) -> dict:
                 **{param.name: param.annotation for param in signature.parameters.values()},
                 "return": signature.return_annotation,
             }
-            params = make_param_dict(OrderedDict(inspect.signature(f["function"]).parameters))
+            params = build_param_info(OrderedDict(inspect.signature(f["function"]).parameters))
             for param in params:
                 if params[param][1] is Output:
                     known["annotations"][params[param][0].name] = params[param][0]
