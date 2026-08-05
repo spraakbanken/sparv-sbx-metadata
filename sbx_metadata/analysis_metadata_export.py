@@ -160,7 +160,7 @@ def create_export_files(
                 logger.error("More than one analysis with the id '%s' in module '%s'", analysis_id, module_name)
                 continue
             all_ids.add(analysis_id)
-            annotations = data.pop("annotations", None)
+            annotations = data.get("annotations", None)  # Keep annotations list in output
             example_output = data.pop("example_output", None)
             example_extra = data.pop("example_extra", None)
 
