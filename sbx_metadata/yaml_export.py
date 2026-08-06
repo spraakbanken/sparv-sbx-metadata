@@ -68,6 +68,7 @@ def yaml_export(
     md_downloads: list = Config("sbx_metadata.downloads"),
     md_interfaces: list = Config("sbx_metadata.interfaces"),
     md_contact: dict = Config("sbx_metadata.contact_info"),
+    md_origin: str = Config("sbx_metadata.origin"),
     md_created: str = Config("sbx_metadata.created"),
     md_updated: str = Config("sbx_metadata.updated"),
     md_doi: str = Config("sbx_metadata.doi"),
@@ -134,6 +135,9 @@ def yaml_export(
         md_obj["contact_info"] = metadata_utils.SBX_DEFAULT_CONTACT
     else:
         md_obj["contact_info"] = md_contact
+
+    # Set required origin field
+    md_obj["origin"] = md_origin
 
     # Add optional metadata fields if they are present
     optional_fields = {

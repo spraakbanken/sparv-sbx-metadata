@@ -26,6 +26,7 @@ METADATA_FILENAME = "metadata.yaml"
 def analysis_metadata_export(
     out: Export = Export("sbx_metadata/.dummy"),
     md_contact: dict = Config("sbx_metadata.contact_info"),
+    md_origin: str = Config("sbx_metadata.origin"),
     metadata_api: str = Config("sbx_metadata.api_url"),
     mink_collection_id: str = Config("sbx_metadata.mink_collection_id"),
 ) -> None:
@@ -39,6 +40,7 @@ def analysis_metadata_export(
         export_dir_analysis,
         export_dir_utility,
         md_contact,
+        md_origin,
         metadata_files,
         plugin_modules,
         metadata_api,
@@ -54,6 +56,7 @@ def analysis_metadata_export(
 def plugin_analysis_metadata_export(
     out: Export = Export("sbx_metadata/.dummy_plugin"),
     md_contact: dict = Config("sbx_metadata.contact_info"),
+    md_origin: str = Config("sbx_metadata.origin"),
     metadata_api: str = Config("sbx_metadata.api_url"),
 ) -> None:
     """Export metadata for Sparv analyses (plugins only)."""
@@ -66,6 +69,7 @@ def plugin_analysis_metadata_export(
         export_dir_analysis,
         export_dir_utility,
         md_contact,
+        md_origin,
         metadata_files,
         plugin_modules,
         metadata_api,
@@ -81,6 +85,7 @@ def create_export_files(
     export_dir_analysis: Path,
     export_dir_utility: Path,
     md_contact: dict,
+    md_origin: str,
     metadata_files: dict[str, Path],
     plugin_modules: set[str],
     metadata_api: str,
@@ -93,6 +98,7 @@ def create_export_files(
         export_dir_analysis: Path to the directory where analysis metadata files should be exported.
         export_dir_utility: Path to the directory where utility metadata files should be exported.
         md_contact: Default contact info to be used in metadata files.
+        md_origin: Default origin to be used in metadata files.
         metadata_files: Dictionary with module names as keys and metadata file paths as values.
         plugin_modules: Set of plugin module names.
         metadata_api: URL of the metadata API to look up existing DOIs.
@@ -218,6 +224,9 @@ def create_export_files(
 
             if not data.get("contact_info") and md_contact:
                 data["contact_info"] = metadata_utils.SBX_DEFAULT_CONTACT if md_contact == "sbx-default" else md_contact
+
+            # Set required origin field
+            data["origin"] = md_origin
 
             # Remove empty fields
             data = {k: v for k, v in data.items() if v}  # noqa: PLW2901

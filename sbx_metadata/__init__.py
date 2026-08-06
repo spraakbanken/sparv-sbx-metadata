@@ -73,6 +73,13 @@ __config__ = [
         datatype=str | dict,
     ),
     Config(
+        "sbx_metadata.origin",
+        default="sbx",
+        description="Origin of the resource. Should be set to 'sbx' for resources created by Språkbanken Text",
+        datatype=str,
+        choices=("sbc", "sbs", "sbt", "sbx"),
+    ),
+    Config(
         "sbx_metadata.trainingdata",
         default=False,
         description="Whether the corpus is intended as training data",
