@@ -213,7 +213,9 @@ def create_export_files(
                     logger.error("Unknown processor in '%s' for module '%s': '%s'", analysis_id, module_name, processor)
                     continue
 
-                generate_utility_example(data, processor, processor_type, plugin_modules, module_name, example_extra)
+                generate_utility_example(
+                    data, processor, processor_type, plugin_modules, module_name, example_output, example_extra
+                )
             else:
                 logger.error("Analysis metadata '%s' in module '%s' is of an unknown type.", analysis_id, module_name)
                 continue
@@ -327,6 +329,7 @@ def generate_utility_example(
     processor_type: str,
     plugin_modules: set[str],
     module_name: str,
+    example_output: str | None,
     example_extra: str | None,
 ) -> None:
     """Update data dictionary with a generated example unless one is already manually set."""
@@ -356,6 +359,8 @@ def generate_utility_example(
             "For more info on how to use Sparv, check out the [Sparv documentation]"
             "(https://spraakbanken.gu.se/sparv).\n"
         )
+    if example_output:
+        data["example"] += f"\nExample output:\n{example_output.strip()}"
 
 
 def set_analysis_unit(data: dict, annotations: list[str], annotation_info: dict[str, Output]) -> None:
