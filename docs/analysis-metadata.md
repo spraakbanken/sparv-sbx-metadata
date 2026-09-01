@@ -1,6 +1,6 @@
 # Analysis Metadata
 
-[Språkbanken Text's list of analyses](https://spraakbanken.gu.se/analyser) is created from metadata files, similar to
+[Språkbanken's list of analyses](https://spraakbanken.gu.se/analyser) is created from metadata files, similar to
 those used for resources like corpora, lexicons, and models. While these metadata files can be created manually, for
 Sparv plugins, we strongly recommend letting Sparv generate them for you based on a Sparv-specific metadata file
 included in your plugin.
@@ -187,7 +187,7 @@ sparv run sbx_metadata:plugin_analysis_metadata_export
 This will generate SBX metadata files and place them in the `export/sbx_metadata/` directory. Note that metadata will be
 generated for *all* installed plugins, not just your plugin.
 
-Next, add the relevant generated metadata files to [Språkbanken Text's metadata
+Next, add the relevant generated metadata files to [Språkbanken's metadata
 repository](https://github.com/spraakbanken/metadata/tree/main/yaml) in the `yaml/analysis` or `yaml/utility` directory.
 This step must be done manually but can be easily accomplished directly in the GitHub web interface. Use the "Add file"
 button (ensure you are in the correct directory).

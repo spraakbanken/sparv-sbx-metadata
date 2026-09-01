@@ -16,7 +16,7 @@ DEFAULT_CODE_LICENSE = "MIT"
 SBX_DEFAULT_CONTACT = {
     "name": "Markus Forsberg",
     "email": "sb-info@svenska.gu.se",
-    "affiliation": {"organization": "Språkbanken Text", "email": "sb-info@svenska.gu.se"},
+    "affiliation": {"organization": "Språkbanken", "email": "sb-info@svenska.gu.se"},
 }
 
 logger = get_logger(__name__)

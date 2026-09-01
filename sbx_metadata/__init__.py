@@ -89,7 +89,7 @@ __config__ = [
         "sbx_metadata.unlisted",
         default=False,
         description="If set to 'true', the resource won't be listed on the "
-        "Språkbanken Text web page, but it will be accessible via its URL",
+        "Språkbanken web page, but it will be accessible via its URL",
         datatype=bool,
     ),
     Config(
@@ -285,7 +285,7 @@ def setup_wizard(corpus_config: dict) -> list[dict]:
             "type": "text",
             "name": "sbx_metadata.contact_info.affiliation.organisation",
             "message": "Name of the organisation the contact person is working for:",
-            "default": {"value": "Språkbanken Text", "name": "Språkbanken Text"},
+            "default": {"value": "Språkbanken", "name": "Språkbanken"},
         },
         {
             "when": lambda x: x.get("sbx_metadata.contact_info") != "sbx-default",
