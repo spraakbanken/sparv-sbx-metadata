@@ -9,7 +9,7 @@ from . import analysis_metadata_export, yaml_export
 __config__ = [
     Config(
         "sbx_metadata.api_url",
-        default="https://ws.spraakbanken.gu.se/ws/metadata/v3/",
+        default="https://ws.spraakbanken.gu.se/ws/metadata/v4/",
         description="URL to the metadata API",
         datatype=str,
     ),
