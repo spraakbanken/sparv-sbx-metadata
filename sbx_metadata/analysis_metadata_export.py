@@ -112,10 +112,10 @@ def create_export_files(
     existing_dois = {}
     if metadata_api:
         # Look up existing DOIs using the metadata API
-        for resource_type in ("analyses", "utilities"):
+        for resource_type in ("analysis", "utility"):
             logger.info("Looking up existing DOIs for %s", resource_type)
             try:
-                response = requests.get(f"{metadata_api}{resource_type}", timeout=10)
+                response = requests.get(f"{metadata_api}?resource-type={resource_type}", timeout=10)
                 for resource in response.json()["resources"]:
                     if resource.get("doi"):
                         existing_dois[resource["id"]] = resource["doi"]
